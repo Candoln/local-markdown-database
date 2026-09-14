@@ -13,14 +13,26 @@ const {
   TFile,
   TFolder,
   normalizePath,
+  Platform,
 } = require("obsidian");
 
 const VIEW_TYPE_DATABASE = "local-markdown-database-view";
+// 0.17.1-hotfix.1 — iPadOS / Obsidian Mobile desktop-like compatibility layer.
 const DATABASE_EXTENSION = "database";
 const SUPPORTED_FIELD_TYPES = ["text", "number", "date", "checkbox", "single-select", "multi-select", "relation"];
 const SOURCE_MARKER_NAME = ".lmd-source.json";
 const OPTION_COLORS = ["default", "transparent", "red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink", "gray"];
 const OPTION_COLOR_LABELS = { default: "重置", transparent: "透明", red: "紅", orange: "橘", yellow: "黃", green: "綠", cyan: "青", blue: "藍", purple: "紫", pink: "粉", gray: "灰" };
+
+function isLmdMobileRuntime() {
+  try { return !!(Platform?.isMobileApp || Platform?.isMobile || document?.body?.classList?.contains("is-mobile")); }
+  catch (_) { return false; }
+}
+function isLmdPrimaryPointer(event) {
+  if (!event) return false;
+  if (event.isPrimary === false) return false;
+  return event.button === 0 || event.button === -1 || event.button === undefined || event.button === null;
+}
 
 const SYSTEM_METADATA_FIELDS = new Set(["lmd-id", "lmd-database", "lmd-parent", "lmd-version-family", "lmd-version-prev", "lmd-version-status"]);
 function isSystemMetadataField(id) { return SYSTEM_METADATA_FIELDS.has(String(id || "").trim().toLowerCase()); }
@@ -2204,6 +2216,7 @@ class DatabaseFileView extends FileView {
   async onLoadFile(file) {
     await super.onLoadFile(file);
     this.databaseFile = file;
+    this.contentEl.toggleClass?.("lmd-db-mobile-runtime", isLmdMobileRuntime());
     this.plugin?.registerLiveDatabaseRenderer?.(this);
     await this.loadAndRender(file);
   }
@@ -2576,7 +2589,7 @@ class DatabaseFileView extends FileView {
         let armTimer = 0; let armed = false;
         const disarm = () => { if (armTimer) window.clearTimeout(armTimer); armTimer = 0; if (!item.matches(':active')) item.draggable = false; };
         item.addEventListener("pointerdown", (event) => {
-          if (event.button !== 0) return;
+          if (!isLmdPrimaryPointer(event)) return;
           armTimer = window.setTimeout(() => { armed = true; item.draggable = true; item.addClass("is-reorder-armed"); }, 260);
         });
         item.addEventListener("pointerup", () => { disarm(); window.setTimeout(() => { armed = false; item.draggable = false; item.removeClass("is-reorder-armed"); }, 0); });
@@ -2642,9 +2655,42 @@ class DatabaseFileView extends FileView {
     }
   }
 
+  installMobileContextMenuFallback(root) {
+    if (!isLmdMobileRuntime() || !(root instanceof HTMLElement)) return;
+    const signal = this.renderAbortController?.signal;
+    root.addClass("lmd-db-mobile-pointer-compat");
+    let holdTimer = 0;
+    let startX = 0, startY = 0, startTarget = null;
+    const clearHold = () => { if (holdTimer) window.clearTimeout(holdTimer); holdTimer = 0; startTarget = null; };
+    const fireContext = (target, event) => {
+      if (!(target instanceof HTMLElement) || !target.isConnected) return;
+      const synthetic = new MouseEvent("contextmenu", { bubbles:true, cancelable:true, clientX:event.clientX, clientY:event.clientY, screenX:event.screenX || 0, screenY:event.screenY || 0, button:2, buttons:0 });
+      target.dispatchEvent(synthetic);
+    };
+    root.addEventListener("pointerdown", (event) => {
+      if (!isLmdPrimaryPointer(event)) return;
+      const target = event.target instanceof HTMLElement ? event.target : null;
+      if (!target || target.closest("input, textarea, select")) return;
+      // Long-press fallback is only for touch/pen. Trackpad/mouse keeps native
+      // secondary-click behavior so normal selection is never delayed.
+      if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
+      clearHold(); startX = event.clientX; startY = event.clientY; startTarget = target;
+      holdTimer = window.setTimeout(() => { const t = startTarget; holdTimer = 0; startTarget = null; if (t) fireContext(t, event); }, 520);
+    }, { capture:true, signal });
+    root.addEventListener("pointermove", (event) => { if (holdTimer && Math.hypot(event.clientX-startX, event.clientY-startY) > 10) clearHold(); }, { capture:true, signal });
+    root.addEventListener("pointerup", clearHold, { capture:true, signal });
+    root.addEventListener("pointercancel", clearHold, { capture:true, signal });
+  }
+
   installCtrlWheelZoom(target, databaseFile, definition, view, onZoom = null) {
     if (!(target instanceof HTMLElement)) return;
     const signal = this.renderAbortController?.signal;
+    if (isLmdMobileRuntime()) {
+      target.style.zoom = "1";
+      if (target.matches?.(".lmd-db-table")) target.style.setProperty("--lmd-table-grid-width", "1px");
+      if (typeof onZoom === "function") onZoom(1);
+      return;
+    }
     const apply = () => {
       const scale = Math.max(0.5, Math.min(1.6, Number(view.zoom) || 1));
       target.style.zoom = String(scale);
@@ -2687,6 +2733,7 @@ class DatabaseFileView extends FileView {
 
   installHorizontalWheelPriority(target) {
     if (!(target instanceof HTMLElement)) return;
+    if (isLmdMobileRuntime()) return;
     const signal = this.renderAbortController?.signal;
     target.addEventListener("wheel", (event) => {
       if (event.ctrlKey || event.altKey || event.metaKey) return;
@@ -2706,6 +2753,7 @@ class DatabaseFileView extends FileView {
 
   installEmbeddedHorizontalWheelRouting(root) {
     if (this.isEmbedded !== true || !(root instanceof HTMLElement)) return;
+    if (isLmdMobileRuntime()) return;
     const signal = this.renderAbortController?.signal;
     root.addEventListener("wheel", (event) => {
       if (event.ctrlKey || event.altKey || event.metaKey) return;
@@ -2737,6 +2785,22 @@ class DatabaseFileView extends FileView {
   installViewportHorizontalScrollbar(source, contentWidthProvider = null) {
     if (!(source instanceof HTMLElement)) return () => {};
     const signal = this.renderAbortController?.signal;
+
+    // iPadOS / Obsidian Mobile: never create a body-level fixed scrollbar. Mobile
+    // WebKit can position fixed overlays against the visual viewport and intercept
+    // pointer events. Keep the table's native two-axis scrolling instead.
+    if (isLmdMobileRuntime()) {
+      source.addClass("lmd-db-mobile-native-scroll");
+      source.removeClass("has-sticky-x-scroll");
+      const updateMobile = () => source.toggleClass("is-horizontally-scrollable", source.scrollWidth > source.clientWidth + 2);
+      const ro = new ResizeObserver(updateMobile);
+      ro.observe(source);
+      const first = source.firstElementChild;
+      if (first instanceof HTMLElement) ro.observe(first);
+      signal?.addEventListener("abort", () => ro.disconnect(), { once: true });
+      requestAnimationFrame(() => { updateMobile(); requestAnimationFrame(updateMobile); });
+      return updateMobile;
+    }
 
     // Embedded database views own their horizontal scrolling. A body-level floating
     // scrollbar belongs to a full database leaf and is actively harmful when several
@@ -5115,13 +5179,13 @@ class DatabaseFileView extends FileView {
     const sidePanel=shell.createDiv({cls:`lmd-db-timeline-log lmd-db-timeline-side-panel${interactionMode==="playback"?"":" is-hidden"}`});
     const sideResizer=sidePanel.createDiv({cls:"lmd-db-timeline-side-resizer",attr:{title:"拖曳調整 Log / Inspector 寬度"}});
     let sideResize=null;
-    sideResizer.addEventListener("pointerdown",(event)=>{if(event.button!==0)return;event.preventDefault();sideResizer.setPointerCapture?.(event.pointerId);sideResize={id:event.pointerId,startX:event.clientX,startWidth:sidePanel.getBoundingClientRect().width};sidePanel.addClass("is-resizing");});
+    sideResizer.addEventListener("pointerdown",(event)=>{if(!isLmdPrimaryPointer(event))return;event.preventDefault();sideResizer.setPointerCapture?.(event.pointerId);sideResize={id:event.pointerId,startX:event.clientX,startWidth:sidePanel.getBoundingClientRect().width};sidePanel.addClass("is-resizing");});
     sideResizer.addEventListener("pointermove",(event)=>{if(!sideResize||sideResize.id!==event.pointerId)return;const next=Math.max(180,Math.min(640,sideResize.startWidth-(event.clientX-sideResize.startX)));shell.style.setProperty("--lmd-timeline-side-width",`${Math.round(next)}px`);view.timelineSidePanelWidth=Math.round(next);});
     const endSideResize=(event)=>{if(!sideResize||sideResize.id!==event.pointerId)return;sideResize=null;sidePanel.removeClass("is-resizing");void this.saveDefinition(databaseFile,definition);};
     sideResizer.addEventListener("pointerup",endSideResize);sideResizer.addEventListener("pointercancel",endSideResize);
     const sideHeightResizer=sidePanel.createDiv({cls:"lmd-db-timeline-side-height-resizer",attr:{title:"拖曳調整 Log / Inspector 高度"}});
     let sideHeightResize=null;
-    sideHeightResizer.addEventListener("pointerdown",(event)=>{if(event.button!==0)return;event.preventDefault();event.stopPropagation();sideHeightResizer.setPointerCapture?.(event.pointerId);sideHeightResize={id:event.pointerId,startY:event.clientY,startHeight:sidePanel.getBoundingClientRect().height};sidePanel.addClass("is-height-resizing");});
+    sideHeightResizer.addEventListener("pointerdown",(event)=>{if(!isLmdPrimaryPointer(event))return;event.preventDefault();event.stopPropagation();sideHeightResizer.setPointerCapture?.(event.pointerId);sideHeightResize={id:event.pointerId,startY:event.clientY,startHeight:sidePanel.getBoundingClientRect().height};sidePanel.addClass("is-height-resizing");});
     sideHeightResizer.addEventListener("pointermove",(event)=>{if(!sideHeightResize||sideHeightResize.id!==event.pointerId)return;const next=Math.max(180,Math.min(900,sideHeightResize.startHeight+(event.clientY-sideHeightResize.startY)));shell.style.setProperty("--lmd-timeline-side-height",`${Math.round(next)}px`);view.timelineSidePanelHeight=Math.round(next);});
     const endSideHeightResize=(event)=>{if(!sideHeightResize||sideHeightResize.id!==event.pointerId)return;sideHeightResize=null;sidePanel.removeClass("is-height-resizing");void this.saveDefinition(databaseFile,definition);};
     sideHeightResizer.addEventListener("pointerup",endSideHeightResize);sideHeightResizer.addEventListener("pointercancel",endSideHeightResize);
@@ -5356,7 +5420,7 @@ class DatabaseFileView extends FileView {
         });
         let drag=null;
         const beginInteraction=(event,mode)=>{
-          if(event.button!==0)return;
+          if(!isLmdPrimaryPointer(event))return;
           event.preventDefault();event.stopPropagation();closeTimelineHover();clearNative();
           bar.setPointerCapture?.(event.pointerId);
           drag={pointerId:event.pointerId,startX:event.clientX,originalStart:start,originalEnd:end,deltaX:0,mode};
@@ -5466,7 +5530,7 @@ class DatabaseFileView extends FileView {
       void savePins().then(()=>this.loadAndRender(databaseFile));
     };
     pinSource.addEventListener("pointerdown",(event)=>{
-      if(event.button!==0)return;
+      if(!isLmdPrimaryPointer(event))return;
       event.preventDefault();event.stopPropagation();
       pinPointerDrag={pointerId:event.pointerId,valid:false,time:null,x:null};
       pinSource.addClass("is-pointer-dragging");
@@ -5615,11 +5679,11 @@ class DatabaseFileView extends FileView {
     };
     let headDrag=null;
     const headFromClientX=(clientX)=>snapDate(clampTime(xToTime(timelineContentXFromClientX(clientX))));
-    playheadHandle.addEventListener("pointerdown",(event)=>{if(event.button!==0)return;event.preventDefault();event.stopPropagation();playheadHandle.setPointerCapture?.(event.pointerId);headDrag={id:event.pointerId};playhead.addClass("is-dragging");});
+    playheadHandle.addEventListener("pointerdown",(event)=>{if(!isLmdPrimaryPointer(event))return;event.preventDefault();event.stopPropagation();playheadHandle.setPointerCapture?.(event.pointerId);headDrag={id:event.pointerId};playhead.addClass("is-dragging");});
     playheadHandle.addEventListener("pointermove",(event)=>{if(!headDrag||headDrag.id!==event.pointerId)return;setPlayheadVisual(headFromClientX(event.clientX));});
     const endHeadDrag=(event)=>{if(!headDrag||headDrag.id!==event.pointerId)return;headDrag=null;playhead.removeClass("is-dragging");void persistPlayhead();};
     playheadHandle.addEventListener("pointerup",endHeadDrag);playheadHandle.addEventListener("pointercancel",endHeadDrag);
-    ruler.addEventListener("pointerdown",(event)=>{if(interactionMode!=="playback"||event.button!==0||event.target===playheadHandle)return;event.preventDefault();setPlayheadVisual(headFromClientX(event.clientX));void persistPlayhead();});
+    ruler.addEventListener("pointerdown",(event)=>{if(interactionMode!=="playback"||!isLmdPrimaryPointer(event)||event.target===playheadHandle)return;event.preventDefault();setPlayheadVisual(headFromClientX(event.clientX));void persistPlayhead();});
 
     let isPlaying=false,lastFrame=0,stepAccumulator=0;
     const syncPlayButton=()=>{
@@ -7028,6 +7092,7 @@ class DatabaseFileView extends FileView {
 
     const tableWrap = this.contentEl.createDiv({ cls: "lmd-db-table-wrap has-sticky-x-scroll" });
     const table = tableWrap.createEl("table", { cls: "lmd-db-table" });
+    this.installMobileContextMenuFallback(tableWrap);
     // 0.16.2 — hierarchy drag has one explicit root target. It is an overlay, so it
     // never adds permanent whitespace to the table. Dropping here is the only drag
     // gesture that removes a parent; row-center drops create a new parent relation.
@@ -7247,7 +7312,7 @@ class DatabaseFileView extends FileView {
       // even when a custom drag image is supplied. We keep the table completely
       // static and move only a fixed preview layer while deciding the drop position.
       titleWrap.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0) return;
+        if (!isLmdPrimaryPointer(event)) return;
         if (event.target.closest("button, .lmd-db-column-resize")) return;
 
         const startX = event.clientX;
@@ -7902,7 +7967,7 @@ class DatabaseFileView extends FileView {
       if (!(anchorCell instanceof HTMLElement)) return;
       fillHandle = anchorCell.createDiv({ cls: "lmd-db-fill-handle", attr: { title: "向上或向下拖曳以填充" } });
       fillHandle.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0 || !cellSelection) return;
+        if (!isLmdPrimaryPointer(event) || !cellSelection) return;
         event.preventDefault();
         event.stopPropagation();
         const sourceSelection = { ...cellSelection };
@@ -8117,7 +8182,7 @@ class DatabaseFileView extends FileView {
     // Row marquee selection starts only from genuine blank space in the Database view.
     // Cell-drag selection and row-marquee selection deliberately remain separate modes.
     this.containerEl.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
+      if (!isLmdPrimaryPointer(event)) return;
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
       if (target.closest(".lmd-db-table, .lmd-db-board, .lmd-db-calendar, .lmd-db-calendar-undated, button, input, select, textarea, .lmd-db-toolbar, .lmd-db-header")) return;
@@ -8184,7 +8249,7 @@ class DatabaseFileView extends FileView {
     }, { capture: true });
 
     tableWrap.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
+      if (!isLmdPrimaryPointer(event)) return;
       if (event.target.closest("button")) return;
       // Editors own pointer gestures. This keeps click-to-edit while preserving
       // native mouse text selection instead of forcing the caret to the end.
@@ -9375,6 +9440,7 @@ module.exports = class LocalMarkdownDatabasePlugin extends Plugin {
       renderer._pendingDefinitionRefresh = false;
       renderer.renderAbortController = new AbortController();
       el.addClass("lmd-db-view", "lmd-db-embedded");
+      if (isLmdMobileRuntime()) el.addClass("lmd-db-mobile-runtime");
 
       // We only need schema to migrate the view list; renderDatabase will resolve
       // the effective schema again using the real source.

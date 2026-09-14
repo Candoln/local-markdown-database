@@ -335,3 +335,12 @@ Parent rows can display computed completion progress based on a Checkbox field. 
 Canvas files (`.canvas`) can live directly inside a Database source folder. They are treated as a separate item type rather than Markdown: the plugin never uses frontmatter APIs on Canvas JSON. Stable identity and Database properties are stored in the `.database` definition under `canvasItems`, so editing Database fields does not rewrite Canvas nodes, edges, frames, positions, or layout. Canvas rows can be opened, renamed, sorted, filtered, and can participate in Parent / Child identity metadata.
 
 This release also hardens lifecycle handling: renaming a Canvas keeps the same metadata identity, deleting one cleans its metadata record, and Markdown-only relation migrations are prevented from touching `.canvas` files. Cross-database bidirectional reverse writes *to* Canvas remain intentionally deferred until a target-database-aware Canvas relation adapter exists.
+
+
+## 0.17.1-hotfix.1 — iPadOS Compatibility
+- Obsidian Mobile/iPadOS uses native table scrolling instead of the viewport-fixed desktop scrollbar.
+- Pointer primary-button checks accept WebKit/iPad pointer semantics.
+- Touch/pen long-press opens the same context menus as desktop right-click.
+- Ctrl-wheel UI zoom and desktop wheel interception are disabled on mobile; saved desktop zoom is not applied on iPad.
+- Table controls and resize targets receive mobile-safe hit areas; text fields avoid iPad focus zoom.
+- Desktop data model, filters, views, Canvas items, Parent/Child and Version Lineage remain shared.

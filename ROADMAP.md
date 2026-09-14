@@ -122,3 +122,12 @@
 - Old duplicate panel instances are removed automatically on the next leaf refresh.
 - Normal Database and embedded Views now show only the `current` member of a version family.
 - `superseded` history stays as real Markdown files and remains accessible through Version Lineage, but no longer appears as ordinary rows by default.
+
+
+## 0.17.1-hotfix.1 — iPadOS Compatibility
+- Obsidian Mobile/iPadOS uses native table scrolling instead of the viewport-fixed desktop scrollbar.
+- Pointer primary-button checks accept WebKit/iPad pointer semantics.
+- Touch/pen long-press opens the same context menus as desktop right-click.
+- Ctrl-wheel UI zoom and desktop wheel interception are disabled on mobile; saved desktop zoom is not applied on iPad.
+- Table controls and resize targets receive mobile-safe hit areas; text fields avoid iPad focus zoom.
+- Desktop data model, filters, views, Canvas items, Parent/Child and Version Lineage remain shared.

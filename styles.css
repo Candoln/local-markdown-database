@@ -4221,3 +4221,65 @@ body.lmd-db-is-timeline-pin-dragging * { cursor: grabbing !important; user-selec
 .lmd-db-note-version-item { flex:0 0 auto; padding:3px 7px; border-radius:6px; color:var(--text-muted); }
 .lmd-db-note-version-item:hover { background:var(--background-modifier-hover); color:var(--text-normal); }
 .lmd-db-note-version-item.is-current { background:color-mix(in srgb, var(--interactive-accent) 15%, transparent); color:var(--interactive-accent); font-weight:600; }
+
+/* 0.17.1-hotfix.1 — iPadOS / Obsidian Mobile desktop-like compatibility.
+   Keep the desktop information architecture, but avoid viewport-fixed overlays,
+   tiny pointer targets and hidden native scrolling on mobile WebKit. */
+.lmd-db-mobile-runtime,
+body.is-mobile .lmd-db-view {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+}
+.lmd-db-mobile-runtime .lmd-db-table-wrap,
+body.is-mobile .lmd-db-table-wrap {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: auto !important;
+  touch-action: pan-x pan-y;
+}
+.lmd-db-mobile-runtime .lmd-db-table-wrap::-webkit-scrollbar,
+body.is-mobile .lmd-db-table-wrap::-webkit-scrollbar {
+  height: 10px !important;
+  width: 10px !important;
+}
+.lmd-db-mobile-runtime .lmd-db-sticky-x-scroll,
+body.is-mobile .lmd-db-sticky-x-scroll {
+  display: none !important;
+  pointer-events: none !important;
+}
+.lmd-db-mobile-runtime .lmd-db-row-handle,
+.lmd-db-mobile-runtime .lmd-db-body-marker,
+.lmd-db-mobile-runtime .lmd-db-parent-toggle,
+.lmd-db-mobile-runtime .lmd-db-toolbar button,
+.lmd-db-mobile-runtime .lmd-db-column-title-wrap button,
+body.is-mobile .lmd-db-view button {
+  min-height: 32px;
+}
+.lmd-db-mobile-runtime .lmd-db-row-handle,
+body.is-mobile .lmd-db-row-handle {
+  min-width: 34px;
+  touch-action: none;
+}
+.lmd-db-mobile-runtime input,
+.lmd-db-mobile-runtime textarea,
+.lmd-db-mobile-runtime select,
+body.is-mobile .lmd-db-view input,
+body.is-mobile .lmd-db-view textarea,
+body.is-mobile .lmd-db-view select {
+  font-size: 16px; /* Prevent iPadOS focus zoom. */
+}
+.lmd-db-mobile-runtime .lmd-db-column-resize,
+body.is-mobile .lmd-db-column-resize {
+  width: 14px;
+}
+.lmd-db-mobile-runtime .lmd-db-table,
+body.is-mobile .lmd-db-table {
+  zoom: 1 !important;
+}
+@media (pointer: coarse) {
+  .lmd-db-mobile-runtime .lmd-db-row-handle,
+  body.is-mobile .lmd-db-row-handle { min-width: 38px; min-height: 36px; }
+  .lmd-db-mobile-runtime .lmd-db-column-resize,
+  body.is-mobile .lmd-db-column-resize { width: 18px; }
+}
