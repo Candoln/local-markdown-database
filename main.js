@@ -17,7 +17,7 @@ const {
 } = require("obsidian");
 
 const VIEW_TYPE_DATABASE = "local-markdown-database-view";
-// 0.17.1-hotfix.1 — iPadOS / Obsidian Mobile desktop-like compatibility layer.
+// 0.17.1-hotfix.2 — iPadOS mobile leaf activation + renderer diagnostics.
 const DATABASE_EXTENSION = "database";
 const SUPPORTED_FIELD_TYPES = ["text", "number", "date", "checkbox", "single-select", "multi-select", "relation"];
 const SOURCE_MARKER_NAME = ".lmd-source.json";
@@ -2218,7 +2218,17 @@ class DatabaseFileView extends FileView {
     this.databaseFile = file;
     this.contentEl.toggleClass?.("lmd-db-mobile-runtime", isLmdMobileRuntime());
     this.plugin?.registerLiveDatabaseRenderer?.(this);
-    await this.loadAndRender(file);
+    try {
+      await this.loadAndRender(file);
+    } catch (error) {
+      console.error("Local Markdown Database: view render failed", error);
+      this.contentEl.empty();
+      this.contentEl.addClass("lmd-db-view", "lmd-db-mobile-render-error");
+      const box = this.contentEl.createDiv({ cls:"lmd-db-error" });
+      box.createEl("h3", { text:"Database 載入失敗" });
+      box.createEl("p", { text:"iPad / Mobile renderer 已啟動，但渲染過程發生錯誤。" });
+      box.createEl("pre", { text:String(error?.stack || error || "未知錯誤") });
+    }
   }
 
   async onUnloadFile(file) {
@@ -9406,6 +9416,51 @@ module.exports = class LocalMarkdownDatabasePlugin extends Plugin {
     this.addSettingTab(new LocalMarkdownDatabaseSettingTab(this.app, this));
     this.registerView(VIEW_TYPE_DATABASE, (leaf) => new DatabaseFileView(leaf, this));
     this.registerExtensions([DATABASE_EXTENSION], VIEW_TYPE_DATABASE);
+
+    // Obsidian Mobile/iPadOS can restore an unknown-extension file leaf before a
+    // community plugin's registerExtensions mapping has taken effect. In that
+    // case the .database file appears as a completely blank leaf. Desktop usually
+    // rebinds it automatically; mobile often does not. Actively repair any open
+    // .database leaf and switch it to LMD's FileView.
+    const ensureMobileDatabaseLeaf = async (file = null) => {
+      if (!isLmdMobileRuntime()) return;
+      const target = file instanceof TFile ? file : this.app.workspace.getActiveFile?.();
+      if (!(target instanceof TFile) || target.extension !== DATABASE_EXTENSION) return;
+      const repairs = [];
+      const visit = (leaf) => {
+        try {
+          const state = leaf?.getViewState?.();
+          const stateFile = normalizePath(state?.state?.file || leaf?.view?.file?.path || "");
+          if (stateFile !== normalizePath(target.path)) return;
+          if (state?.type === VIEW_TYPE_DATABASE || leaf?.view?.getViewType?.() === VIEW_TYPE_DATABASE) return;
+          repairs.push(leaf.setViewState({
+            type: VIEW_TYPE_DATABASE,
+            state: { file: target.path },
+            active: true,
+          }));
+        } catch (error) { console.error("Local Markdown Database: mobile leaf repair failed", error); }
+      };
+      if (typeof this.app.workspace.iterateAllLeaves === "function") this.app.workspace.iterateAllLeaves(visit);
+      else visit(this.app.workspace.activeLeaf);
+      if (repairs.length) {
+        try { await Promise.allSettled(repairs); } catch (_) {}
+      }
+    };
+    this._ensureMobileDatabaseLeaf = ensureMobileDatabaseLeaf;
+    this.registerEvent(this.app.workspace.on("file-open", (file) => {
+      if (file instanceof TFile && file.extension === DATABASE_EXTENSION)
+        setTimeout(() => void ensureMobileDatabaseLeaf(file), 0);
+    }));
+    this.registerEvent(this.app.workspace.on("layout-change", () => {
+      const file = this.app.workspace.getActiveFile?.();
+      if (file instanceof TFile && file.extension === DATABASE_EXTENSION)
+        setTimeout(() => void ensureMobileDatabaseLeaf(file), 0);
+    }));
+    this.app.workspace.onLayoutReady(() => {
+      const file = this.app.workspace.getActiveFile?.();
+      if (file instanceof TFile && file.extension === DATABASE_EXTENSION)
+        setTimeout(() => void ensureMobileDatabaseLeaf(file), 50);
+    });
     this.registerMarkdownCodeBlockProcessor("lmd-database", async (source, el, ctx) => {
       const spec = parseEmbeddedDatabaseSpec(source);
       let databaseFile = spec.databaseId ? await this.findDatabaseFileById(spec.databaseId) : null;

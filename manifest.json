@@ -1,9 +1,9 @@
 {
   "id": "local-markdown-database",
   "name": "Local Markdown Database",
-  "version": "0.17.1-hotfix.1",
+  "version": "0.17.1-hotfix.2",
   "minAppVersion": "1.8.0",
-  "description": "Local-first Markdown/Canvas database with iPadOS compatibility, Parent / Child hierarchy, hierarchical checkbox progress, and Version Lineage.",
+  "description": "Local-first Markdown/Canvas database with iPadOS mobile leaf activation, Parent / Child hierarchy, hierarchical checkbox progress, and Version Lineage.",
   "author": "Candoln + ChatGPT",
   "isDesktopOnly": false
 }

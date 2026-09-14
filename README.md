@@ -344,3 +344,8 @@ This release also hardens lifecycle handling: renaming a Canvas keeps the same m
 - Ctrl-wheel UI zoom and desktop wheel interception are disabled on mobile; saved desktop zoom is not applied on iPad.
 - Table controls and resize targets receive mobile-safe hit areas; text fields avoid iPad focus zoom.
 - Desktop data model, filters, views, Canvas items, Parent/Child and Version Lineage remain shared.
+
+
+## 0.17.1-hotfix.2
+- iPadOS/Obsidian Mobile: actively repair blank `.database` leaves into the Local Markdown Database view.
+- Mobile renderer errors are shown in-page instead of failing as an empty white leaf.
