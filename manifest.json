@@ -1,0 +1,9 @@
+{
+  "id": "local-markdown-database",
+  "name": "Local Markdown Database",
+  "version": "0.17.1",
+  "minAppVersion": "1.8.0",
+  "description": "A local-first database view backed by Markdown and Canvas files, with safe Canvas item adapters, Parent / Child hierarchy, hierarchical checkbox progress, and Version Lineage.",
+  "author": "Candoln + ChatGPT",
+  "isDesktopOnly": false
+}

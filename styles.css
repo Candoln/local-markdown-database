@@ -1,0 +1,4223 @@
+.lmd-db-view {
+  padding: 0;
+  /* The Obsidian leaf already owns vertical scrolling. Keeping another auto
+     scroller here creates two competing right-side scrollbars and wheel stalls. */
+  overflow: visible;
+  min-height: 100%;
+  background: var(--background-primary);
+}
+
+.lmd-db-header {
+  padding: 22px 24px 12px;
+  background: var(--background-primary);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.lmd-db-title-row,
+.lmd-db-header-actions,
+.lmd-db-toolbar,
+.lmd-db-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lmd-db-title { font-size: 1.55em; font-weight: 700; line-height: 1.2; }
+.lmd-db-header-actions { margin-left: auto; }
+.lmd-db-subtitle,
+.lmd-db-footer,
+.lmd-db-phase-note { color: var(--text-muted); font-size: var(--font-ui-small); }
+.lmd-db-subtitle { margin-top: 6px; }
+.lmd-db-phase-note {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+}
+
+.lmd-db-toolbar {
+  padding: 12px 16px 0;
+}
+
+.lmd-db-table-wrap { overflow: auto; padding: 10px 16px 0; }
+.lmd-db-table {
+  width: max-content;
+  min-width: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: var(--font-ui-small);
+  border-top: 1px solid var(--background-modifier-border);
+  border-left: 1px solid var(--background-modifier-border);
+}
+
+.lmd-db-table th,
+.lmd-db-table td {
+  min-width: 0;
+  max-width: none;
+  height: 38px;
+  padding: 4px 6px;
+  overflow: hidden;
+  border-right: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.lmd-db-table th {
+  padding: 7px 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--background-secondary);
+}
+
+
+.lmd-db-name-cell {
+  position: relative;
+  min-width: 0 !important;
+}
+
+.lmd-db-name-input,
+.lmd-db-cell-input {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  margin: 0;
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-normal);
+}
+
+.lmd-db-name-input { min-width: 0; flex: 1 1 auto; padding-right: 6px; font-weight: 500; }
+.lmd-db-name-line { display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; }
+.lmd-db-name-input:focus,
+.lmd-db-cell-input:focus {
+  border-color: var(--interactive-accent);
+  background: var(--background-primary);
+  box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.lmd-db-open-button {
+  position: static;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  opacity: 0;
+}
+.lmd-db-name-line:hover .lmd-db-open-button,
+.lmd-db-open-button:focus-visible { opacity: 1; }
+
+.lmd-db-actions-head,
+.lmd-db-row-actions { width: 74px !important; min-width: 74px !important; text-align: center !important; }
+.lmd-db-delete-button { font-size: var(--font-ui-smaller); }
+
+.lmd-db-empty-state,
+.lmd-db-error {
+  margin: 24px;
+  padding: 18px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-secondary);
+}
+
+.lmd-db-error pre { white-space: pre-wrap; color: var(--text-muted); }
+.lmd-db-footer { padding: 12px 24px 24px; }
+.lmd-db-modal-note { color: var(--text-muted); }
+.lmd-db-modal-actions { justify-content: flex-end; margin-top: 18px; }
+.lmd-db-modal-error { min-height: 20px; color: var(--text-error); font-size: var(--font-ui-small); }
+
+/* 0.3 table interaction */
+.lmd-db-selection-info {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+.lmd-db-row-handle-head,
+.lmd-db-row-handle-cell {
+  width: 42px !important;
+  min-width: 42px !important;
+  max-width: 42px !important;
+  text-align: center !important;
+  padding: 0 !important;
+}
+.lmd-db-row-handle {
+  width: 28px;
+  min-width: 28px;
+  padding: 0 4px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: grab;
+  opacity: .55;
+}
+.lmd-db-row-handle:active { cursor: grabbing; }
+.lmd-db-row.is-selected td { background: transparent !important; }
+.lmd-db-row.is-selected .lmd-db-row-handle {
+  outline: 1px solid var(--interactive-accent);
+  outline-offset: -2px;
+  color: var(--interactive-accent);
+}
+.lmd-db-row.is-dragging { opacity: .45; }
+.lmd-db-row.is-drop-target td { border-top: 2px solid var(--interactive-accent); }
+.lmd-db-column-head { position: relative; user-select: none; cursor: default; }
+.lmd-db-column-title-wrap { cursor: grab; }
+.lmd-db-column-title-wrap:active { cursor: grabbing; }
+.lmd-db-column-head.is-dragging { opacity: 1; }
+.lmd-db-column-head.is-drop-target { box-shadow: inset 3px 0 0 var(--interactive-accent); }
+.lmd-db-column-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 8px; }
+.lmd-db-column-resize {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 4;
+}
+.lmd-db-column-resize.is-right { right: 0; width: 5px; }
+.lmd-db-column-resize:hover::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: auto;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--interactive-accent);
+}
+
+
+/* 0.3.3 deterministic sizing + functional cell selection */
+.lmd-db-table col { min-width: 0; }
+.lmd-db-is-resizing,
+.lmd-db-is-resizing * { cursor: col-resize !important; user-select: none !important; }
+.lmd-db-is-cell-selecting,
+.lmd-db-is-cell-selecting * { user-select: none !important; }
+.lmd-db-data-cell.is-cell-selected {
+  background: color-mix(in srgb, var(--interactive-accent) 18%, var(--background-primary)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 60%, transparent);
+}
+.lmd-db-data-cell.is-cell-selected .lmd-db-name-input,
+.lmd-db-data-cell.is-cell-selected .lmd-db-cell-input {
+  user-select: none;
+}
+
+/* 0.3.4: no row hover fill, including theme/Obsidian table hover rules. */
+.lmd-db-table tbody tr:hover > td,
+.lmd-db-table tbody tr:hover > td:first-child,
+.lmd-db-table tbody tr:hover > td:last-child {
+  background: transparent !important;
+}
+.lmd-db-table tbody tr.is-selected:hover > td {
+  background: transparent !important;
+}
+
+/* 0.3.5: two distinct selection modes. */
+.lmd-db-row.is-selected > td {
+  background: color-mix(in srgb, var(--interactive-accent) 14%, var(--background-primary)) !important;
+}
+.lmd-db-row.is-selected:hover > td {
+  background: color-mix(in srgb, var(--interactive-accent) 14%, var(--background-primary)) !important;
+}
+.lmd-db-row.is-selected .lmd-db-row-handle {
+  outline: 1px solid var(--interactive-accent);
+  outline-offset: -2px;
+  color: var(--interactive-accent);
+}
+.lmd-db-row-marquee {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--interactive-accent) 78%, transparent);
+  background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+  border-radius: 3px;
+}
+.lmd-db-is-row-marqueeing,
+.lmd-db-is-row-marqueeing * {
+  user-select: none !important;
+}
+.lmd-db-bulk-delete {
+  margin-left: 8px;
+}
+
+
+/* 0.3.6: row selection is the highest-priority visual state.
+   Theme hover/focus/input backgrounds must never wash the selected row back to white. */
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td {
+  background: color-mix(in srgb, var(--interactive-accent) 14%, var(--background-primary)) !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-name-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-cell-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td .lmd-db-name-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td .lmd-db-cell-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-name-input:hover,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-cell-input:hover,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-name-input:focus,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-cell-input:focus {
+  background: color-mix(in srgb, var(--interactive-accent) 14%, var(--background-primary)) !important;
+}
+\n\n/* 0.3.7: cell selection and text editing are mutually exclusive visual states. */\n.lmd-db-data-cell.is-cell-selected {\n  background: color-mix(in srgb, var(--interactive-accent) 18%, var(--background-primary)) !important;\n  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 58%, transparent) !important;\n}\n.lmd-db-data-cell.is-cell-selected .lmd-db-name-input,\n.lmd-db-data-cell.is-cell-selected .lmd-db-cell-input,\n.lmd-db-data-cell.is-cell-selected .lmd-db-name-input:hover,\n.lmd-db-data-cell.is-cell-selected .lmd-db-cell-input:hover,\n.lmd-db-data-cell.is-cell-selected .lmd-db-name-input:focus,\n.lmd-db-data-cell.is-cell-selected .lmd-db-cell-input:focus {\n  background: transparent !important;\n  border-color: transparent !important;\n  box-shadow: none !important;\n  outline: none !important;\n  caret-color: transparent !important;\n  user-select: none !important;\n}\n.lmd-db-data-cell.is-cell-selected .lmd-db-open-button {\n  opacity: 0 !important;\n}\n.lmd-db-is-cell-selecting .lmd-db-table input,\n.lmd-db-is-cell-selecting .lmd-db-table textarea {\n  user-select: none !important;\n  caret-color: transparent !important;\n}\n
+
+/* 0.4 Sort / Filter */
+.lmd-db-rule-bar { display:flex; flex-wrap:wrap; gap:6px; padding:8px 16px 0; }
+.lmd-db-rule-chip { height:26px; padding:2px 9px; border-radius:999px; font-size:var(--font-ui-smaller); color:var(--text-muted); }
+
+/* 0.5.0 row insertion indicator: top/bottom half of a row are distinct targets. */
+.lmd-db-row.is-drop-before > td { box-shadow: inset 0 2px 0 var(--interactive-accent); }
+.lmd-db-row.is-drop-after > td { box-shadow: inset 0 -2px 0 var(--interactive-accent); }
+.lmd-db-cell-input[data-field-type="relation"] { text-decoration-thickness: from-font; }
+
+.lmd-db-data-cell:has(.lmd-db-relation-pick) { position: relative; }
+.lmd-db-cell-input[data-field-type="relation"] { padding-right: 34px; }
+.lmd-db-relation-pick { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); padding: 2px 7px; min-width: 26px; }
+.lmd-db-relation-search { width: 100%; margin-bottom: 10px; }
+.lmd-db-relation-list { max-height: 420px; overflow: auto; border: 1px solid var(--background-modifier-border); border-radius: var(--radius-s); }
+.lmd-db-relation-option { display: flex; align-items: center; gap: 8px; padding: 7px 9px; }
+.lmd-db-relation-option:hover { background: var(--background-modifier-hover); }
+.lmd-db-relation-option-name { flex: 1; }
+.lmd-db-relation-option-path { color: var(--text-muted); font-size: var(--font-ui-smaller); }
+
+/* 0.5.0: Relation target database + reliable end-of-list drop target. */
+.lmd-db-relation-target {
+  margin: -4px 0 10px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+.lmd-db-cell-input[data-field-type="relation"][readonly] {
+  cursor: default;
+}
+.lmd-db-row-drop-end {
+  box-sizing: border-box;
+  height: 18px;
+  margin: 0 16px;
+  display: flex;
+  align-items: center;
+  padding-left: 42px;
+  color: transparent;
+  border-top: 2px solid transparent;
+  user-select: none;
+}
+.lmd-db-row-drop-end.is-drop-target {
+  color: var(--text-muted);
+  border-top-color: var(--interactive-accent);
+}
+
+/* 0.5.1 Relation target binding */
+.lmd-db-column-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.lmd-db-column-title-wrap .lmd-db-column-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+.lmd-db-relation-bind {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: .7;
+  cursor: pointer;
+}
+.lmd-db-relation-bind:hover { opacity: 1; background: var(--background-modifier-hover); }
+
+/* 0.5.2: editable database title + clickable Relation chips. */
+.lmd-db-title-input {
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: min(680px, 70vw);
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  padding: 2px 6px;
+  margin: -3px -7px;
+  background: transparent;
+  color: var(--text-normal);
+  font-size: 1.55em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.lmd-db-title-input:hover { border-color: var(--background-modifier-border); }
+.lmd-db-title-input:focus {
+  border-color: var(--interactive-accent);
+  box-shadow: 0 0 0 1px var(--interactive-accent);
+  outline: none;
+  background: var(--background-primary);
+}
+.lmd-db-relation-cell { position: relative; padding-right: 38px !important; }
+.lmd-db-relation-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.lmd-db-relation-chip {
+  min-width: 0;
+  max-width: 180px;
+  padding: 2px 7px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.lmd-db-relation-chip:hover {
+  border-color: var(--interactive-accent);
+  color: var(--text-accent);
+}
+.lmd-db-relation-empty {
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 0.6.0 Property UX */
+.lmd-db-field-settings {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: .55;
+  cursor: pointer;
+}
+.lmd-db-field-settings:hover { opacity: 1; background: var(--background-modifier-hover); }
+
+.lmd-db-multiselect-cell { position: relative; padding-right: 38px !important; }
+.lmd-db-multiselect-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.lmd-db-data-cell.is-truncate .lmd-db-multiselect-chips,
+.lmd-db-data-cell.is-truncate .lmd-db-markdown-display {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.lmd-db-data-cell.is-wrap .lmd-db-multiselect-chips {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+.lmd-db-data-cell.is-wrap .lmd-db-markdown-display {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.lmd-db-option-chip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 180px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lmd-db-option-chip.is-red { background: color-mix(in srgb, var(--color-red) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-red) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-orange { background: color-mix(in srgb, var(--color-orange) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-orange) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-yellow { background: color-mix(in srgb, var(--color-yellow) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-yellow) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-green { background: color-mix(in srgb, var(--color-green) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-green) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-cyan { background: color-mix(in srgb, var(--color-cyan) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-cyan) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-blue { background: color-mix(in srgb, var(--color-blue) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-blue) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-purple { background: color-mix(in srgb, var(--color-purple) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-purple) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-pink { background: color-mix(in srgb, var(--color-pink) 18%, var(--background-primary)); border-color: color-mix(in srgb, var(--color-pink) 42%, var(--background-modifier-border)); }
+.lmd-db-option-chip.is-gray { background: color-mix(in srgb, var(--text-muted) 13%, var(--background-primary)); border-color: var(--background-modifier-border); }
+.lmd-db-multiselect-mirror {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.lmd-db-multiselect-search { width: 100%; margin-bottom: 10px; }
+.lmd-db-multiselect-list { max-height: 420px; overflow: auto; border: 1px solid var(--background-modifier-border); border-radius: var(--radius-s); }
+.lmd-db-multiselect-option { display: grid; grid-template-columns: 22px minmax(0, 1fr) 86px; align-items: center; gap: 8px; padding: 7px 9px; cursor: pointer; }
+.lmd-db-multiselect-option:hover { background: var(--background-modifier-hover); }
+.lmd-db-option-color { width: 86px; }
+.lmd-db-multiselect-create { width: 100%; text-align: left; border: 0; border-radius: 0; box-shadow: none; background: transparent; padding: 9px 10px; }
+
+.lmd-db-markdown-display {
+  min-height: 28px;
+  padding: 5px 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lmd-db-markdown-display > :first-child { margin-top: 0; }
+.lmd-db-markdown-display > :last-child { margin-bottom: 0; }
+.lmd-db-markdown-display p { display: inline; margin: 0; }
+.lmd-db-markdown-display a { cursor: pointer; }
+.lmd-db-markdown-editor { display: none; }
+.lmd-db-data-cell.is-markdown-cell.is-editing .lmd-db-markdown-display { display: none; }
+.lmd-db-data-cell.is-markdown-cell.is-editing .lmd-db-markdown-editor { display: block; width: 100%; }
+
+/* 0.6.2-r1: unified table wrap + editing ergonomics. */
+.lmd-db-empty-value {
+  color: var(--text-faint);
+  font-style: normal;
+}
+.lmd-db-markdown-editor {
+  resize: none;
+  min-height: 28px;
+  line-height: 1.45;
+  overflow: hidden;
+}
+.lmd-db-data-cell.is-wrap .lmd-db-markdown-editor {
+  min-height: 48px;
+  white-space: pre-wrap;
+}
+.lmd-db-data-cell.is-truncate .lmd-db-markdown-display,
+.lmd-db-data-cell.is-truncate .lmd-db-multiselect-chips,
+.lmd-db-data-cell.is-truncate .lmd-db-relation-chips {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lmd-db-data-cell.is-wrap .lmd-db-markdown-display,
+.lmd-db-data-cell.is-wrap .lmd-db-multiselect-chips,
+.lmd-db-data-cell.is-wrap .lmd-db-relation-chips {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  flex-wrap: wrap;
+}
+/* MarkdownRenderer list blocks normally bring document-style indentation. In a
+   compact database cell the content should start on the same left edge as text. */
+.lmd-db-markdown-display ul,
+.lmd-db-markdown-display ol {
+  margin: 0;
+  padding-inline-start: 1.15em;
+}
+.lmd-db-markdown-display li {
+  margin: 0;
+  padding: 0;
+}
+.lmd-db-markdown-display li > p {
+  display: inline;
+  margin: 0;
+}
+/* Editing must retain native text selection. */
+.lmd-db-name-input,
+.lmd-db-cell-input,
+.lmd-db-markdown-editor {
+  user-select: text;
+}
+
+
+/* 0.6.2-r2: native text editing must win over table gestures. */
+.lmd-db-empty-value:empty { display: none; }
+.lmd-db-markdown-editor { box-sizing: border-box; }
+.lmd-db-name-input,
+.lmd-db-markdown-editor,
+.lmd-db-cell-input { -webkit-user-drag: none; }
+
+/* 0.6.3: calmer Notion-like chips and picker polish. */
+.lmd-db-option-chip,
+.lmd-db-relation-chip {
+  min-height: 22px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: none;
+  font-size: var(--font-ui-smaller);
+  line-height: 1.5;
+  font-weight: 500;
+}
+.lmd-db-relation-chip {
+  background: color-mix(in srgb, var(--background-modifier-border) 45%, var(--background-primary));
+  color: var(--text-normal);
+}
+.lmd-db-relation-chip:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+.lmd-db-option-chip.is-red { background: color-mix(in srgb, var(--color-red) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-orange { background: color-mix(in srgb, var(--color-orange) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-yellow { background: color-mix(in srgb, var(--color-yellow) 25%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-green { background: color-mix(in srgb, var(--color-green) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-cyan { background: color-mix(in srgb, var(--color-cyan) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-blue { background: color-mix(in srgb, var(--color-blue) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-purple { background: color-mix(in srgb, var(--color-purple) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-pink { background: color-mix(in srgb, var(--color-pink) 22%, var(--background-primary)); border: 0; }
+.lmd-db-option-chip.is-gray { background: color-mix(in srgb, var(--text-muted) 16%, var(--background-primary)); border: 0; }
+
+.lmd-db-multiselect-list,
+.lmd-db-relation-list {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+}
+.lmd-db-multiselect-option,
+.lmd-db-relation-option {
+  min-height: 34px;
+  padding: 6px 9px;
+  border-bottom: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
+}
+.lmd-db-multiselect-option:last-child,
+.lmd-db-relation-option:last-child { border-bottom: 0; }
+.lmd-db-multiselect-option:hover,
+.lmd-db-relation-option:hover { background: var(--background-modifier-hover); }
+.lmd-db-multiselect-search,
+.lmd-db-relation-search {
+  height: 34px;
+  border-radius: var(--radius-m);
+}
+.lmd-db-multiselect-create {
+  min-height: 34px;
+  color: var(--text-muted);
+}
+.lmd-db-multiselect-create:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+.lmd-db-relation-option-path {
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 0.6.4 — View-only row / column / cell colors. Cell > row > column. */
+.lmd-db-bg-red { background: color-mix(in srgb, var(--color-red) 10%, var(--background-primary)); }
+.lmd-db-bg-orange { background: color-mix(in srgb, var(--color-orange) 10%, var(--background-primary)); }
+.lmd-db-bg-yellow { background: color-mix(in srgb, var(--color-yellow) 12%, var(--background-primary)); }
+.lmd-db-bg-green { background: color-mix(in srgb, var(--color-green) 10%, var(--background-primary)); }
+.lmd-db-bg-cyan { background: color-mix(in srgb, var(--color-cyan) 10%, var(--background-primary)); }
+.lmd-db-bg-blue { background: color-mix(in srgb, var(--color-blue) 10%, var(--background-primary)); }
+.lmd-db-bg-purple { background: color-mix(in srgb, var(--color-purple) 10%, var(--background-primary)); }
+.lmd-db-bg-pink { background: color-mix(in srgb, var(--color-pink) 10%, var(--background-primary)); }
+.lmd-db-bg-gray { background: color-mix(in srgb, var(--text-muted) 8%, var(--background-primary)); }
+
+.lmd-db-row[data-lmd-row-color="red"] > td { background: color-mix(in srgb, var(--color-red) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="orange"] > td { background: color-mix(in srgb, var(--color-orange) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="yellow"] > td { background: color-mix(in srgb, var(--color-yellow) 14%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="green"] > td { background: color-mix(in srgb, var(--color-green) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="cyan"] > td { background: color-mix(in srgb, var(--color-cyan) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="blue"] > td { background: color-mix(in srgb, var(--color-blue) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="purple"] > td { background: color-mix(in srgb, var(--color-purple) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="pink"] > td { background: color-mix(in srgb, var(--color-pink) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="gray"] > td { background: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary)); }
+
+/* Column color must win over row color. */
+.lmd-db-row > td.lmd-db-bg-red, .lmd-db-column-head.lmd-db-bg-red { background: color-mix(in srgb, var(--color-red) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-orange, .lmd-db-column-head.lmd-db-bg-orange { background: color-mix(in srgb, var(--color-orange) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-yellow, .lmd-db-column-head.lmd-db-bg-yellow { background: color-mix(in srgb, var(--color-yellow) 12%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-green, .lmd-db-column-head.lmd-db-bg-green { background: color-mix(in srgb, var(--color-green) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-cyan, .lmd-db-column-head.lmd-db-bg-cyan { background: color-mix(in srgb, var(--color-cyan) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-blue, .lmd-db-column-head.lmd-db-bg-blue { background: color-mix(in srgb, var(--color-blue) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-purple, .lmd-db-column-head.lmd-db-bg-purple { background: color-mix(in srgb, var(--color-purple) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-pink, .lmd-db-column-head.lmd-db-bg-pink { background: color-mix(in srgb, var(--color-pink) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-bg-gray, .lmd-db-column-head.lmd-db-bg-gray { background: color-mix(in srgb, var(--text-muted) 8%, var(--background-primary)); }
+
+/* Cell color has highest normal-state priority. Selection still wins via existing !important rules. */
+.lmd-db-row > td.lmd-db-cell-bg-red { background: color-mix(in srgb, var(--color-red) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-orange { background: color-mix(in srgb, var(--color-orange) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-yellow { background: color-mix(in srgb, var(--color-yellow) 20%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-green { background: color-mix(in srgb, var(--color-green) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-cyan { background: color-mix(in srgb, var(--color-cyan) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-blue { background: color-mix(in srgb, var(--color-blue) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-purple { background: color-mix(in srgb, var(--color-purple) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-pink { background: color-mix(in srgb, var(--color-pink) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-gray { background: color-mix(in srgb, var(--text-muted) 14%, var(--background-primary)); }
+
+/* 0.6.4 precedence correction: Row overrides Column; Cell overrides Row. */
+.lmd-db-row[data-lmd-row-color="red"] > td { background: color-mix(in srgb, var(--color-red) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="orange"] > td { background: color-mix(in srgb, var(--color-orange) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="yellow"] > td { background: color-mix(in srgb, var(--color-yellow) 14%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="green"] > td { background: color-mix(in srgb, var(--color-green) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="cyan"] > td { background: color-mix(in srgb, var(--color-cyan) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="blue"] > td { background: color-mix(in srgb, var(--color-blue) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="purple"] > td { background: color-mix(in srgb, var(--color-purple) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="pink"] > td { background: color-mix(in srgb, var(--color-pink) 12%, var(--background-primary)); }
+.lmd-db-row[data-lmd-row-color="gray"] > td { background: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-red { background: color-mix(in srgb, var(--color-red) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-orange { background: color-mix(in srgb, var(--color-orange) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-yellow { background: color-mix(in srgb, var(--color-yellow) 20%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-green { background: color-mix(in srgb, var(--color-green) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-cyan { background: color-mix(in srgb, var(--color-cyan) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-blue { background: color-mix(in srgb, var(--color-blue) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-purple { background: color-mix(in srgb, var(--color-purple) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-pink { background: color-mix(in srgb, var(--color-pink) 18%, var(--background-primary)); }
+.lmd-db-row > td.lmd-db-cell-bg-gray { background: color-mix(in srgb, var(--text-muted) 14%, var(--background-primary)); }
+
+/* 0.6.5 — deterministic color layers: selection overlay > tag/chip > table color.
+   Only one table background is resolved in JS (Cell > Row > Column), so colors never stack. */
+.lmd-db-effective-bg-red { --lmd-effective-bg: color-mix(in srgb, var(--color-red) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-orange { --lmd-effective-bg: color-mix(in srgb, var(--color-orange) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-yellow { --lmd-effective-bg: color-mix(in srgb, var(--color-yellow) 15%, var(--background-primary)); }
+.lmd-db-effective-bg-green { --lmd-effective-bg: color-mix(in srgb, var(--color-green) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-cyan { --lmd-effective-bg: color-mix(in srgb, var(--color-cyan) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-blue { --lmd-effective-bg: color-mix(in srgb, var(--color-blue) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-purple { --lmd-effective-bg: color-mix(in srgb, var(--color-purple) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-pink { --lmd-effective-bg: color-mix(in srgb, var(--color-pink) 13%, var(--background-primary)); }
+.lmd-db-effective-bg-gray { --lmd-effective-bg: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary)); }
+
+.lmd-db-table th.lmd-db-column-head,
+.lmd-db-table tbody td {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+
+/* Hover never washes a custom background back to white/transparent. */
+.lmd-db-table tbody tr:hover > td,
+.lmd-db-table tbody tr:hover > td:first-child,
+.lmd-db-table tbody tr:hover > td:last-child,
+.lmd-db-table tbody tr.is-selected:hover > td {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+
+/* Editors inherit the resolved cell color instead of painting their own white surface. */
+.lmd-db-table td .lmd-db-name-input,
+.lmd-db-table td .lmd-db-cell-input,
+.lmd-db-table td .lmd-db-markdown-editor,
+.lmd-db-table td .lmd-db-name-input:hover,
+.lmd-db-table td .lmd-db-cell-input:hover,
+.lmd-db-table td .lmd-db-markdown-editor:hover,
+.lmd-db-table td .lmd-db-name-input:focus,
+.lmd-db-table td .lmd-db-cell-input:focus,
+.lmd-db-table td .lmd-db-markdown-editor:focus {
+  background: transparent !important;
+}
+
+/* Selection is a translucent overlay, not a replacement background.
+   One ::after is used even when row- and cell-selection overlap, so it never darkens twice. */
+.lmd-db-table tbody td {
+  position: relative;
+}
+.lmd-db-row.is-selected > td::after,
+.lmd-db-data-cell.is-cell-selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--interactive-accent) 14%, transparent);
+}
+.lmd-db-data-cell.is-cell-selected {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 52%, transparent) !important;
+}
+.lmd-db-row.is-selected > td,
+.lmd-db-row.is-selected:hover > td {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+
+/* Keep tag / relation chip colors independent from the table background. */
+.lmd-db-option-chip,
+.lmd-db-relation-chip {
+  position: relative;
+  z-index: 2;
+}
+
+/* 0.6.6 — toolbar palette, neutral headers, icon labels, stable colored cell surfaces. */
+.lmd-db-palette-button {
+  width: 34px;
+  min-width: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lmd-db-palette-button svg { width: 17px; height: 17px; }
+
+/* Column colors belong to data, not to the header row. */
+.lmd-db-table th.lmd-db-column-head {
+  --lmd-effective-bg: var(--background-secondary);
+  background: var(--background-secondary) !important;
+}
+.lmd-db-column-title-wrap {
+  position: relative;
+  padding-right: 4px;
+}
+.lmd-db-column-type-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+}
+.lmd-db-column-type-icon svg { width: 14px; height: 14px; stroke-width: 1.8; }
+
+/* Relation bind button floats above the header content and resize hit area. */
+.lmd-db-column-head:has(.lmd-db-relation-bind) .lmd-db-column-title-wrap { padding-right: 28px; }
+.lmd-db-relation-bind {
+  position: absolute;
+  z-index: 45;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--background-secondary) !important;
+}
+.lmd-db-relation-bind:hover { background: var(--background-modifier-hover) !important; }
+.lmd-db-column-resize { z-index: 35; }
+
+/* A colored cell is one continuous surface. Content/renderers never repaint white. */
+.lmd-db-table tbody td > input,
+.lmd-db-table tbody td > textarea,
+.lmd-db-table tbody td > select,
+.lmd-db-table tbody td > .lmd-db-markdown-display,
+.lmd-db-table tbody td > .lmd-db-multiselect-chips,
+.lmd-db-table tbody td > .lmd-db-relation-chips,
+.lmd-db-table tbody td .markdown-rendered,
+.lmd-db-table tbody td .markdown-preview-view,
+.lmd-db-table tbody td .markdown-preview-section {
+  background-color: transparent !important;
+}
+
+/* Per-row delete buttons are gone in 0.6.6; deletion lives in row context menu. */
+.lmd-db-actions-head,
+.lmd-db-row-actions,
+.lmd-db-delete-button { display: none !important; }
+
+/* 0.6.7 — faithful Markdown line structure + automatic color target selection. */
+.lmd-db-markdown-display {
+  white-space: pre-wrap;
+}
+.lmd-db-markdown-display p {
+  display: block;
+  margin: 0;
+}
+.lmd-db-markdown-display li > p {
+  display: inline;
+}
+
+/* Column selection is a translucent overlay so underlying table colors remain visible. */
+.lmd-db-column-head.is-column-selected,
+.lmd-db-data-cell.is-column-selected {
+  position: relative;
+}
+.lmd-db-column-head.is-column-selected::after,
+.lmd-db-data-cell.is-column-selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--interactive-accent) 12%, transparent);
+}
+.lmd-db-column-head.is-column-selected {
+  box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+}
+
+/* Color picker is a compact square swatch grid: no visible color names. */
+.lmd-db-color-modal h2 { margin-bottom: 12px; }
+.lmd-db-color-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 8px;
+  width: max-content;
+  padding: 2px 0 8px;
+}
+.lmd-db-color-swatch {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 7px;
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: none;
+}
+.lmd-db-color-swatch:hover {
+  outline: 2px solid color-mix(in srgb, var(--interactive-accent) 55%, transparent);
+  outline-offset: 1px;
+}
+.lmd-db-color-swatch.is-default { background: var(--background-primary); color: var(--text-muted); }
+.lmd-db-color-swatch.is-red { background: color-mix(in srgb, var(--color-red) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-orange { background: color-mix(in srgb, var(--color-orange) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-yellow { background: color-mix(in srgb, var(--color-yellow) 58%, var(--background-primary)); }
+.lmd-db-color-swatch.is-green { background: color-mix(in srgb, var(--color-green) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-cyan { background: color-mix(in srgb, var(--color-cyan) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-blue { background: color-mix(in srgb, var(--color-blue) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-purple { background: color-mix(in srgb, var(--color-purple) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-pink { background: color-mix(in srgb, var(--color-pink) 55%, var(--background-primary)); }
+.lmd-db-color-swatch.is-gray { background: color-mix(in srgb, var(--text-muted) 38%, var(--background-primary)); }
+
+/* 0.6.8 — header-row colors + relation surface fix. */
+.lmd-db-header-effective-bg-red { --lmd-effective-bg: color-mix(in srgb, var(--color-red) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-orange { --lmd-effective-bg: color-mix(in srgb, var(--color-orange) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-yellow { --lmd-effective-bg: color-mix(in srgb, var(--color-yellow) 15%, var(--background-primary)); }
+.lmd-db-header-effective-bg-green { --lmd-effective-bg: color-mix(in srgb, var(--color-green) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-cyan { --lmd-effective-bg: color-mix(in srgb, var(--color-cyan) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-blue { --lmd-effective-bg: color-mix(in srgb, var(--color-blue) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-purple { --lmd-effective-bg: color-mix(in srgb, var(--color-purple) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-pink { --lmd-effective-bg: color-mix(in srgb, var(--color-pink) 13%, var(--background-primary)); }
+.lmd-db-header-effective-bg-gray { --lmd-effective-bg: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary)); }
+
+.lmd-db-table thead th.lmd-db-column-head,
+.lmd-db-table thead th.lmd-db-row-handle-head {
+  background: var(--lmd-effective-bg, var(--background-secondary)) !important;
+}
+
+.lmd-db-header-row-selector {
+  position: relative;
+  padding: 0 !important;
+  text-align: center;
+}
+.lmd-db-header-row-select-button {
+  width: 100%;
+  height: 100%;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent !important;
+  color: var(--text-faint);
+}
+.lmd-db-header-row-select-button:hover { color: var(--text-muted); }
+.lmd-db-header-row-select-button svg { width: 14px; height: 14px; }
+
+.lmd-db-table thead tr.is-header-row-selected th {
+  position: relative;
+}
+.lmd-db-table thead tr.is-header-row-selected th::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 44%, transparent);
+  z-index: 20;
+}
+.lmd-db-table thead tr.is-header-row-selected .lmd-db-relation-bind,
+.lmd-db-table thead tr.is-header-row-selected .lmd-db-column-resize {
+  z-index: 50;
+}
+
+/* Relation cells are part of the same colored surface as every other td. */
+.lmd-db-table tbody td.lmd-db-relation-cell {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+.lmd-db-table tbody td.lmd-db-relation-cell > .lmd-db-relation-chips {
+  background: transparent !important;
+}
+
+
+/* 0.6.9 — header colors actually win, relation surfaces inherit table color,
+   and "default" means transparent/native theme color. */
+
+/* 0.6.6 had a more-specific neutral-header selector that prevented header
+   color classes from changing --lmd-effective-bg. Override it explicitly. */
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-red,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-red { --lmd-effective-bg: color-mix(in srgb, var(--color-red) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-orange,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-orange { --lmd-effective-bg: color-mix(in srgb, var(--color-orange) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-yellow,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-yellow { --lmd-effective-bg: color-mix(in srgb, var(--color-yellow) 15%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-green,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-green { --lmd-effective-bg: color-mix(in srgb, var(--color-green) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-cyan,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-cyan { --lmd-effective-bg: color-mix(in srgb, var(--color-cyan) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-blue,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-blue { --lmd-effective-bg: color-mix(in srgb, var(--color-blue) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-purple,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-purple { --lmd-effective-bg: color-mix(in srgb, var(--color-purple) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-pink,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-pink { --lmd-effective-bg: color-mix(in srgb, var(--color-pink) 13%, var(--background-primary)); }
+.lmd-db-table thead th.lmd-db-column-head.lmd-db-header-effective-bg-gray,
+.lmd-db-table thead th.lmd-db-row-handle-head.lmd-db-header-effective-bg-gray { --lmd-effective-bg: color-mix(in srgb, var(--text-muted) 10%, var(--background-primary)); }
+
+/* Relation is not a tag color layer. Its neutral chip must let the cell / row /
+   column surface show through instead of painting an opaque light island. */
+.lmd-db-table tbody td.lmd-db-relation-cell { padding-right: 8px !important; }
+.lmd-db-table tbody td.lmd-db-relation-cell .lmd-db-relation-chip {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 28%, transparent) !important;
+  box-shadow: none !important;
+}
+.lmd-db-table tbody td.lmd-db-relation-cell .lmd-db-relation-chip:hover {
+  background: color-mix(in srgb, var(--text-muted) 10%, transparent) !important;
+}
+
+/* Make the default/transparent swatch visually communicate "no custom color"
+   while inheriting whatever the active Obsidian theme uses. */
+.lmd-db-color-swatch.is-default {
+  background:
+    linear-gradient(45deg, var(--background-modifier-border) 25%, transparent 25%, transparent 75%, var(--background-modifier-border) 75%),
+    linear-gradient(45deg, var(--background-modifier-border) 25%, var(--background-primary) 25%, var(--background-primary) 75%, var(--background-modifier-border) 75%);
+  background-position: 0 0, 5px 5px;
+  background-size: 10px 10px;
+}
+
+
+/* 0.6.10 — selection and header-color semantics cleanup. */
+/* Transparent is a real color choice; reset removes custom color and returns to neutral header. */
+.lmd-db-table th.lmd-db-column-head.lmd-db-header-effective-bg-transparent,
+.lmd-db-table th.lmd-db-row-handle-head.lmd-db-header-effective-bg-transparent {
+  --lmd-effective-bg: transparent;
+  background: transparent !important;
+}
+.lmd-db-color-swatch.is-transparent {
+  background:
+    linear-gradient(45deg, var(--background-modifier-border) 25%, transparent 25%) 0 0/8px 8px,
+    linear-gradient(45deg, transparent 75%, var(--background-modifier-border) 75%) 0 0/8px 8px,
+    linear-gradient(45deg, transparent 75%, var(--background-modifier-border) 75%) 4px -4px/8px 8px,
+    linear-gradient(45deg, var(--background-modifier-border) 25%, var(--background-primary) 25%) 4px 4px/8px 8px !important;
+}
+.lmd-db-color-swatch.is-default {
+  background: var(--background-secondary) !important;
+}
+
+/* Row-marquee selection must preserve the actual resolved table color underneath. */
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-name-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-cell-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td .lmd-db-markdown-editor,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td .lmd-db-name-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td .lmd-db-cell-input,
+.lmd-db-table tbody tr.lmd-db-row.is-selected:hover > td .lmd-db-markdown-editor {
+  background: transparent !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--interactive-accent) 13%, transparent) !important;
+}
+
+
+/* 0.6.11-r1 — Freeze columns.
+   IMPORTANT: these are real newlines. 0.6.11 accidentally shipped literal \n
+   escape text, causing the whole freeze stylesheet block to be ignored. */
+.lmd-db-table-wrap {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: visible;
+}
+.lmd-db-table th.lmd-db-frozen-cell,
+.lmd-db-table td.lmd-db-frozen-cell,
+.lmd-db-table th.lmd-db-frozen-handle,
+.lmd-db-table td.lmd-db-frozen-handle {
+  position: sticky !important;
+  background-clip: border-box !important;
+  overflow: hidden !important;
+  isolation: isolate;
+}
+.lmd-db-table th.lmd-db-frozen-handle,
+.lmd-db-table th.lmd-db-frozen-cell {
+  background-color: var(--lmd-effective-bg, var(--background-secondary)) !important;
+}
+.lmd-db-table td.lmd-db-frozen-handle,
+.lmd-db-table td.lmd-db-frozen-cell {
+  background-color: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+.lmd-db-table thead th { position: relative; z-index: 1; }
+.lmd-db-table tbody td { position: relative; z-index: 0; }
+.lmd-db-table th.lmd-db-frozen-handle { z-index: 52; }
+.lmd-db-table th.lmd-db-frozen-cell { z-index: 51; }
+.lmd-db-table td.lmd-db-frozen-handle { z-index: 42; }
+.lmd-db-table td.lmd-db-frozen-cell { z-index: 41; }
+
+.lmd-db-table th.lmd-db-frozen-cell::before,
+.lmd-db-table td.lmd-db-frozen-cell::before,
+.lmd-db-table th.lmd-db-frozen-handle::before,
+.lmd-db-table td.lmd-db-frozen-handle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--lmd-effective-bg, var(--background-primary));
+  pointer-events: none;
+  z-index: -1;
+}
+.lmd-db-table th.lmd-db-frozen-cell::before,
+.lmd-db-table th.lmd-db-frozen-handle::before {
+  background: var(--lmd-effective-bg, var(--background-secondary));
+}
+
+/* Freeze boundary: use a plain border only. No shadow, so the next column
+   keeps its normal visual weight even before any horizontal scrolling. */
+.lmd-db-table .lmd-db-frozen-cell.is-freeze-edge {
+  box-shadow: 1px 0 0 var(--background-modifier-border);
+}
+
+
+/* 0.6.11-r3 — a dedicated paint shield sits above scrolling cells but below
+   frozen cells. This prevents non-frozen headers/content from bleeding through
+   the sticky area, regardless of theme table/header stacking contexts. */
+.lmd-db-freeze-mask {
+  position: absolute;
+  left: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 35;
+  background: var(--background-primary);
+  border-right: 1px solid var(--background-modifier-border);
+  box-shadow: none;
+}
+.lmd-db-table th.lmd-db-frozen-handle,
+.lmd-db-table th.lmd-db-frozen-cell { z-index: 55 !important; }
+.lmd-db-table td.lmd-db-frozen-handle,
+.lmd-db-table td.lmd-db-frozen-cell { z-index: 45 !important; }
+.lmd-db-table thead th:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle) { z-index: 2 !important; }
+.lmd-db-table tbody td:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle) { z-index: 1 !important; }
+
+/* 0.6.11-r4 — precisely clip every scrolling table cell at the real frozen boundary.
+   This removes partial header/cell slivers without relying on theme stacking behavior. */
+.lmd-db-table th:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle),
+.lmd-db-table td:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle) {
+  will-change: clip-path;
+}
+
+/* 0.6.11-r5 — restore table perimeter lines on sticky cells. Sticky painting can
+   cover the table's own outer border, so draw the frozen perimeter explicitly. */
+.lmd-db-table thead th.lmd-db-frozen-handle,
+.lmd-db-table thead th.lmd-db-frozen-cell {
+  border-top: 1px solid var(--background-modifier-border) !important;
+}
+.lmd-db-table th.lmd-db-frozen-handle,
+.lmd-db-table td.lmd-db-frozen-handle {
+  border-left: 1px solid var(--background-modifier-border) !important;
+}
+
+
+/* 0.6.12 — final Table UI polish. Visual-only; no data model changes. */
+.lmd-db-header { padding: 18px 20px 10px; }
+.lmd-db-title { font-size: 1.45em; }
+.lmd-db-toolbar {
+  padding: 10px 16px 4px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.lmd-db-toolbar-button,
+.lmd-db-palette-button {
+  min-height: 32px;
+  height: 32px;
+  border-radius: var(--radius-s);
+}
+.lmd-db-toolbar-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+}
+.lmd-db-toolbar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.lmd-db-toolbar-icon svg { width: 15px; height: 15px; }
+.lmd-db-toolbar-button.mod-cta .lmd-db-toolbar-icon { color: currentColor; }
+.lmd-db-toolbar-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-rule-bar { padding-top: 4px; }
+.lmd-db-table-wrap { padding-top: 6px; }
+.lmd-db-selection-info {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms ease;
+}
+.lmd-db-selection-info.is-visible { opacity: 1; }
+.lmd-db-footer { padding-top: 10px; color: var(--text-faint); }
+
+
+/* 0.7.0 View System */
+.lmd-db-view-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 16px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.lmd-db-view-tabs { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.lmd-db-view-tab,
+.lmd-db-add-view {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--text-muted);
+  border-radius: 5px 5px 0 0;
+  min-height: 30px;
+}
+.lmd-db-view-tab { padding: 5px 10px; white-space: nowrap; }
+.lmd-db-view-tab:hover,
+.lmd-db-add-view:hover { background: var(--background-modifier-hover) !important; color: var(--text-normal); }
+.lmd-db-view-tab.is-active {
+  color: var(--text-normal);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--interactive-accent) !important;
+}
+.lmd-db-add-view { width: 30px; min-width: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.lmd-db-add-view svg { width: 15px; height: 15px; }
+.lmd-db-modal-text-input { width: 100%; margin: 8px 0 14px; }
+
+/* Softer selection overlays: preserve underlying row/cell colors. */
+.lmd-db-row-marquee {
+  background: color-mix(in srgb, var(--interactive-accent) 5%, transparent) !important;
+  border-color: color-mix(in srgb, var(--interactive-accent) 45%, transparent) !important;
+}
+.lmd-db-row.is-selected > td::after,
+.lmd-db-data-cell.is-cell-selected::after,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td::after {
+  background: color-mix(in srgb, var(--interactive-accent) 7%, transparent) !important;
+}
+
+
+/* 0.7.0-r1 — column dragging must not fight Freeze painting/clipping. */
+.lmd-db-column-drag-preview {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  overflow: hidden;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  box-shadow: var(--shadow-s);
+  pointer-events: none;
+}
+.lmd-db-is-column-dragging .lmd-db-table th.lmd-db-frozen-handle,
+.lmd-db-is-column-dragging .lmd-db-table th.lmd-db-frozen-cell {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+.lmd-db-is-column-dragging .lmd-db-table th:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle),
+.lmd-db-is-column-dragging .lmd-db-table td:not(.lmd-db-frozen-cell):not(.lmd-db-frozen-handle) {
+  backface-visibility: hidden;
+}
+
+
+/* 0.7.0-r2 — only the non-sticky title wrapper is draggable.
+   The sticky <th> must never enter Chromium's native drag-source state. */
+.lmd-db-column-head.is-dragging { opacity: 1 !important; }
+.lmd-db-column-title-wrap.is-drag-source { opacity: .55; }
+.lmd-db-column-drag-preview {
+  gap: 7px;
+  white-space: nowrap;
+}
+.lmd-db-column-drag-preview .lmd-db-column-type-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.lmd-db-column-drag-preview-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 0.7.0-r3 pointer-driven column reorder */
+.lmd-db-pointer-drag-preview {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+  color: var(--text-normal);
+  opacity: .96;
+}
+.lmd-db-is-column-pointer-dragging,
+.lmd-db-is-column-pointer-dragging * { cursor: grabbing !important; user-select: none !important; }
+.lmd-db-column-head.is-drop-target { box-shadow: inset 2px 0 0 var(--interactive-accent) !important; }
+.lmd-db-column-head.is-drop-target.is-drop-after { box-shadow: inset -2px 0 0 var(--interactive-accent) !important; }
+
+
+/* 0.7.0-r5 — during column pointer-drag, suspend Freeze entirely.
+   This prevents sticky/clip/z-index state from participating in reordering. */
+.lmd-db-table-wrap.is-freeze-drag-paused .lmd-db-freeze-mask {
+  display: none !important;
+}
+.lmd-db-table-wrap.is-freeze-drag-paused .lmd-db-frozen-cell,
+.lmd-db-table-wrap.is-freeze-drag-paused .lmd-db-frozen-handle {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: auto !important;
+  box-shadow: none !important;
+}
+.lmd-db-table-wrap.is-freeze-drag-paused .lmd-db-frozen-cell::before,
+.lmd-db-table-wrap.is-freeze-drag-paused .lmd-db-frozen-handle::before {
+  display: none !important;
+}
+
+
+/* 0.7.0-r7 — revert r6 transform Freeze. Column reorder no longer paints
+   drop state inside header cells; a single overlay line spans the whole table. */
+.lmd-db-column-head.is-drop-target,
+.lmd-db-column-head.is-drop-target.is-drop-after {
+  box-shadow: none !important;
+}
+.lmd-db-column-drop-indicator {
+  position: absolute;
+  width: 2px;
+  min-width: 2px;
+  background: var(--interactive-accent);
+  z-index: 200;
+  pointer-events: none;
+  transform: translateX(-1px);
+  border-radius: 2px;
+}
+
+
+/* 0.7.1 — Freeze Pane Rewrite.
+   Frozen and scrolling columns are separate physical tables. All legacy sticky,
+   mask, clip-path and transform behavior is disabled inside the split renderer. */
+.lmd-db-table-wrap:has(.lmd-db-split-freeze) {
+  overflow: visible !important;
+  padding-bottom: 0;
+}
+.lmd-db-split-freeze {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  position: relative;
+  border-top: 1px solid var(--background-modifier-border);
+  border-left: 1px solid var(--background-modifier-border);
+}
+.lmd-db-frozen-pane {
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 3;
+  background: var(--background-primary);
+  border-right: 1px solid var(--background-modifier-border);
+}
+.lmd-db-scroll-pane {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  position: relative;
+  z-index: 1;
+  scrollbar-width: auto;
+}
+.lmd-db-split-freeze .lmd-db-table {
+  border-top: 0 !important;
+  border-left: 0 !important;
+  margin: 0 !important;
+}
+.lmd-db-split-freeze .lmd-db-frozen-cell,
+.lmd-db-split-freeze .lmd-db-frozen-handle {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  clip-path: none !important;
+  z-index: auto !important;
+  overflow: hidden !important;
+  isolation: auto !important;
+}
+.lmd-db-split-freeze .lmd-db-frozen-cell::before,
+.lmd-db-split-freeze .lmd-db-frozen-handle::before {
+  display: none !important;
+}
+.lmd-db-split-freeze .lmd-db-freeze-mask { display: none !important; }
+.lmd-db-split-freeze .lmd-db-frozen-cell.is-freeze-edge { box-shadow: none !important; }
+.lmd-db-frozen-pane-table th,
+.lmd-db-frozen-pane-table td {
+  background: var(--lmd-effective-bg, var(--background-primary)) !important;
+}
+.lmd-db-frozen-pane-table thead th {
+  background: var(--lmd-effective-bg, var(--background-secondary)) !important;
+}
+.lmd-db-split-freeze tr { box-sizing: border-box; }
+.lmd-db-split-freeze .lmd-db-column-drop-indicator {
+  z-index: 30;
+}
+
+
+/* 0.7.2 — Board View */
+.lmd-db-board-toolbar { margin-bottom: 8px; }
+.lmd-db-board {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 16px 18px;
+  min-height: 280px;
+}
+.lmd-db-board-column {
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 280px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--background-secondary) 72%, transparent);
+  border: 1px solid var(--background-modifier-border);
+  overflow: hidden;
+}
+.lmd-db-board-column.is-drop-target {
+  border-color: color-mix(in srgb, var(--interactive-accent) 70%, var(--background-modifier-border));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 35%, transparent);
+}
+.lmd-db-board-column-head {
+  min-height: 38px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.lmd-db-board-column-title { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-board-count {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  min-width: 20px;
+  text-align: center;
+}
+.lmd-db-board-column-body {
+  min-height: 90px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lmd-db-board-card {
+  padding: 10px 11px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 7px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
+  cursor: grab;
+}
+.lmd-db-board-card:active { cursor: grabbing; }
+.lmd-db-board-card.is-dragging { opacity: .45; }
+.lmd-db-board-card-title { font-weight: 600; margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-board-card-property { display: flex; gap: 6px; min-width: 0; color: var(--text-muted); font-size: var(--font-ui-smaller); line-height: 1.4; }
+.lmd-db-board-card-property-name { flex: 0 0 auto; color: var(--text-faint); }
+.lmd-db-board-card-property-value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-board-add-group {
+  flex: 0 0 180px;
+  min-width: 180px;
+  justify-content: flex-start;
+  color: var(--text-muted);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+
+/* 0.7.3 — Board drag clarity / column ordering / drag cleanup */
+.lmd-db-is-board-dragging,
+.lmd-db-is-board-dragging * {
+  user-select: none !important;
+}
+.lmd-db-board-column.is-column-drop-before,
+.lmd-db-board-column.is-column-drop-after { position: relative; }
+.lmd-db-board-column.is-column-drop-before::before,
+.lmd-db-board-column.is-column-drop-after::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--interactive-accent);
+  z-index: 10;
+  pointer-events: none;
+}
+.lmd-db-board-column.is-column-drop-before::before { left: -8px; }
+.lmd-db-board-column.is-column-drop-after::after { right: -8px; }
+.lmd-db-board-rule-bar { padding-left: 16px; padding-right: 16px; }
+
+
+/* 0.7.4 Board card content settings */
+.lmd-db-board-card-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0 14px;
+}
+.lmd-db-board-card-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 4px 6px;
+  border-radius: var(--radius-s);
+}
+.lmd-db-board-card-field-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-board-card-field-label {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.lmd-db-board-card-field-actions { display: inline-flex; gap: 4px; }
+.lmd-db-board-card-field-actions button { min-width: 30px; padding: 2px 7px; }
+
+
+/* 0.7.5 — Board property fidelity, hidden groups, and Table drag regression fixes. */
+.lmd-db-board-group-visibility-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 420px;
+  overflow: auto;
+  margin: 10px 0;
+}
+.lmd-db-board-group-visibility-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border-radius: var(--radius-s);
+}
+.lmd-db-board-group-visibility-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-board-card-property-value.lmd-db-multiselect-chips,
+.lmd-db-board-card-property-value.lmd-db-relation-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  overflow: visible;
+  white-space: normal;
+}
+.lmd-db-board-card-property.is-multi-select,
+.lmd-db-board-card-property.is-relation {
+  align-items: flex-start;
+}
+.lmd-db-board-card-property .lmd-db-option-chip,
+.lmd-db-board-card-property .lmd-db-relation-chip {
+  min-height: 20px;
+  font-size: var(--font-ui-smaller);
+}
+.lmd-db-board-markdown {
+  min-width: 0;
+  overflow: hidden;
+}
+.lmd-db-board-markdown > :first-child { margin-top: 0; }
+.lmd-db-board-markdown > :last-child { margin-bottom: 0; }
+.lmd-db-board-markdown p { margin: 0; }
+.lmd-db-board-markdown ul,
+.lmd-db-board-markdown ol { margin: 0; padding-inline-start: 1.15em; }
+.lmd-db-board-markdown li { margin: 0; }
+
+/* Table row drag indicator belongs to Table only. Board deliberately has none. */
+.lmd-db-table tbody tr.lmd-db-row.is-drop-before > td {
+  box-shadow: inset 0 3px 0 var(--interactive-accent) !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-drop-after > td {
+  box-shadow: inset 0 -3px 0 var(--interactive-accent) !important;
+}
+
+
+/* 0.7.6 — Board UI polish. Keep property blocks readable and make group actions feel native. */
+.lmd-db-board-card-title {
+  margin-bottom: 9px;
+}
+.lmd-db-board-card-property + .lmd-db-board-card-property {
+  margin-top: 7px;
+}
+.lmd-db-board-card-property {
+  line-height: 1.5;
+}
+.lmd-db-board-card-property.is-multi-select + .lmd-db-board-card-property,
+.lmd-db-board-card-property.is-relation + .lmd-db-board-card-property {
+  margin-top: 8px;
+}
+.lmd-db-board-column-head .lmd-db-board-column-title.lmd-db-option-chip {
+  width: fit-content;
+  max-width: calc(100% - 34px);
+  min-height: 22px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: var(--font-ui-small);
+  color: var(--text-normal);
+}
+.lmd-db-board-add-card {
+  width: 100%;
+  min-height: 32px;
+  margin-top: 2px;
+  padding: 5px 8px;
+  justify-content: flex-start;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  text-align: left;
+}
+.lmd-db-board-add-card:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+
+
+/* 0.7.7 — Board card insertion guides and grouped actions. */
+.lmd-db-board-card { position: relative; }
+.lmd-db-board-card.is-card-drop-before::before,
+.lmd-db-board-card.is-card-drop-after::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--interactive-accent);
+  z-index: 20;
+  pointer-events: none;
+}
+.lmd-db-board-card.is-card-drop-before::before { top: -6px; }
+.lmd-db-board-card.is-card-drop-after::after { bottom: -6px; }
+.lmd-db-board-column-body { position: relative; }
+.lmd-db-board-column-body.is-card-drop-end::after {
+  content: "";
+  display: block;
+  height: 2px;
+  margin: 1px 3px 5px;
+  border-radius: 2px;
+  background: var(--interactive-accent);
+  flex: 0 0 2px;
+}
+
+
+/* 0.7.8 — robust Board insertion target + hover card editor. */
+.lmd-db-board-card.is-card-drop-before::before,
+.lmd-db-board-card.is-card-drop-after::after,
+.lmd-db-board-column-body.is-card-drop-end::after {
+  display: none !important;
+  content: none !important;
+}
+.lmd-db-board-column-body { position: relative; }
+.lmd-db-board-drop-indicator {
+  display: none;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--interactive-accent);
+  z-index: 30;
+  pointer-events: none;
+  transform: translateY(-1px);
+}
+.lmd-db-board-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  margin-bottom: 9px;
+}
+.lmd-db-board-card-head .lmd-db-board-card-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+.lmd-db-board-card-edit-button {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+  transition: opacity 90ms ease, background 90ms ease;
+}
+.lmd-db-board-card:hover .lmd-db-board-card-edit-button,
+.lmd-db-board-card:focus-within .lmd-db-board-card-edit-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lmd-db-board-card-edit-button:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+.lmd-db-board-card-edit-button svg { width: 15px; height: 15px; }
+.lmd-db-board-card-edit-tags { margin-top: 14px; }
+.lmd-db-board-card-edit-tags h3 { margin: 0 0 8px; font-size: var(--font-ui-small); }
+.lmd-db-board-card-edit-tag-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 130px) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.lmd-db-board-card-edit-tag-name { color: var(--text-muted); }
+.lmd-db-board-card-edit-tag-chips { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.lmd-db-board-card-edit-tag-button { padding: 3px 8px; }
+
+
+/* 0.8.0 — Table Group foundation */
+.lmd-db-table-group-row > td {
+  height: 34px !important;
+  padding: 0 !important;
+  background: var(--background-secondary-alt, var(--background-secondary)) !important;
+  border-right: 1px solid var(--background-modifier-border) !important;
+}
+.lmd-db-table-group-cell {
+  position: relative;
+}
+.lmd-db-table-group-toggle {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  margin: 2px 2px 2px 6px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  vertical-align: middle;
+}
+.lmd-db-table-group-toggle svg { width: 15px; height: 15px; }
+.lmd-db-table-group-name {
+  font-weight: 600;
+  color: var(--text-normal);
+  vertical-align: middle;
+}
+.lmd-db-table-group-count {
+  margin-left: 8px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  vertical-align: middle;
+}
+
+
+/* 0.8.1 — stronger Table Group separation + group-local add row */
+.lmd-db-table-group-spacer-row > td {
+  height: 12px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: var(--background-primary) !important;
+}
+.lmd-db-table-group-row > td {
+  border-top: 1px solid var(--background-modifier-border) !important;
+}
+.lmd-db-table-group-add-row > td {
+  height: 39px !important;
+  padding: 4px 6px 6px !important;
+  background: var(--background-primary) !important;
+  border-right: 1px solid var(--background-modifier-border) !important;
+  border-bottom: 1px solid var(--background-modifier-border) !important;
+}
+.lmd-db-table-group-add-button {
+  display: inline-flex;
+  margin-top: 2px;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 2px 8px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+.lmd-db-table-group-add-button:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-table-group-add-button svg { width: 14px; height: 14px; }
+
+
+/* 0.8.3 — one vertical scroll owner only.
+   IMPORTANT: overflow-x:auto + overflow-y:visible computes overflow-y to auto
+   per CSS Overflow rules, which silently creates a second vertical scroll
+   container. Keep horizontal scrolling here, but explicitly suppress vertical
+   scrolling; the wrapper has auto height so table/group content remains fully
+   laid out and the Obsidian view owns vertical scrolling. */
+.lmd-db-view { overflow-y: visible !important; }
+.lmd-db-table-wrap {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+/* 0.8.4 — grouped row drag targets */
+.lmd-db-table-group-row.is-group-drop-target > td,
+.lmd-db-table-group-add-row.is-group-drop-target > td,
+.lmd-db-row.is-group-drop-target > td {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--interactive-accent) 55%, transparent);
+}
+
+/* 0.8.5 — grouped-table interaction fixes. */
+.lmd-db-name-input {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-drop-before > td {
+  box-shadow: inset 0 2px 0 var(--interactive-accent) !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-drop-after > td {
+  box-shadow: inset 0 -2px 0 var(--interactive-accent) !important;
+}
+
+/* 0.8.7 — grouped drag guide + group ordering / visibility. */
+.lmd-db-table tbody tr.lmd-db-row.is-drop-before > td {
+  box-shadow: none !important;
+  border-top: 2px solid var(--interactive-accent) !important;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-drop-after > td {
+  box-shadow: none !important;
+  border-bottom: 2px solid var(--interactive-accent) !important;
+}
+.lmd-db-table-group-row { cursor: grab; }
+.lmd-db-table-group-row:active { cursor: grabbing; }
+.lmd-db-table-group-row.is-group-dragging { opacity: .5; }
+.lmd-db-table-group-row.is-group-order-before > td {
+  box-shadow: none !important;
+  border-top: 2px solid var(--interactive-accent) !important;
+}
+.lmd-db-table-group-row.is-group-order-after > td {
+  box-shadow: none !important;
+  border-bottom: 2px solid var(--interactive-accent) !important;
+}
+
+
+/* 0.8.7 — bugfix: true single-line grouped reorder guide + softer selection. */
+.lmd-db-table-row-insert-line {
+  position: absolute;
+  display: none;
+  height: 2px;
+  background: var(--interactive-accent);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 90;
+}
+.lmd-db-table tbody tr.lmd-db-row.is-drop-before > td,
+.lmd-db-table tbody tr.lmd-db-row.is-drop-after > td {
+  border-top-color: var(--background-modifier-border) !important;
+  border-bottom-color: var(--background-modifier-border) !important;
+  box-shadow: none !important;
+}
+.lmd-db-row-marquee {
+  background: color-mix(in srgb, var(--interactive-accent) 3%, transparent) !important;
+  border-color: color-mix(in srgb, var(--interactive-accent) 28%, transparent) !important;
+}
+.lmd-db-row.is-selected > td::after,
+.lmd-db-data-cell.is-cell-selected::after,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td::after {
+  background: color-mix(in srgb, var(--interactive-accent) 4%, transparent) !important;
+}
+
+
+/* 0.8.8 — drag guide hard reset.
+   Non-grouped Table restores the 0.8.6 row-boundary design.
+   Grouped Table uses a single body-level fixed overlay line, never a row/cell block. */
+.lmd-db-table:not(.is-grouped-table) tbody tr.lmd-db-row.is-drop-before > td {
+  box-shadow: none !important;
+  border-top: 2px solid var(--interactive-accent) !important;
+}
+.lmd-db-table:not(.is-grouped-table) tbody tr.lmd-db-row.is-drop-after > td {
+  box-shadow: none !important;
+  border-bottom: 2px solid var(--interactive-accent) !important;
+}
+.lmd-db-table.is-grouped-table tbody tr.lmd-db-row.is-group-drop-target > td,
+.lmd-db-table.is-grouped-table tbody tr.lmd-db-row.is-drop-before > td,
+.lmd-db-table.is-grouped-table tbody tr.lmd-db-row.is-drop-after > td {
+  box-shadow: none !important;
+  outline: none !important;
+  border-top-color: var(--background-modifier-border) !important;
+  border-bottom-color: var(--background-modifier-border) !important;
+}
+.lmd-db-table-row-insert-line {
+  position: fixed !important;
+  display: block !important;
+  height: 2px !important;
+  min-height: 2px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 1px;
+  background: var(--interactive-accent) !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  z-index: 100000 !important;
+}
+
+/* Selection correction: only the marquee rectangle gets softer.
+   Selected rows/cells return to the previous 0.8.6 overlay strength. */
+.lmd-db-row-marquee {
+  background: color-mix(in srgb, var(--interactive-accent) 2%, transparent) !important;
+  border-color: color-mix(in srgb, var(--interactive-accent) 32%, transparent) !important;
+}
+.lmd-db-row.is-selected > td::after,
+.lmd-db-data-cell.is-cell-selected::after,
+.lmd-db-table tbody tr.lmd-db-row.is-selected > td::after {
+  background: color-mix(in srgb, var(--interactive-accent) 7%, transparent) !important;
+}
+
+
+/* 0.8.9 — only one "add new group" affordance, after the final visible group. */
+.lmd-db-table-new-group-row > td {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 8px 4px 2px !important;
+}
+.lmd-db-table-new-group-cell {
+  text-align: left;
+}
+.lmd-db-table-new-group-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 9px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+.lmd-db-table-new-group-button:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-table-new-group-button svg { width: 14px; height: 14px; }
+\n\n/* 0.9.1 — single always-available horizontal scrollbar + safe table zoom. */\n.lmd-db-table-wrap.has-sticky-x-scroll {\n  scrollbar-width: none !important;\n}\n.lmd-db-table-wrap.has-sticky-x-scroll::-webkit-scrollbar {\n  height: 0 !important;\n}\n.lmd-db-sticky-x-scroll {\n  position: fixed;\n  z-index: 80;\n  height: 16px;\n  overflow-x: auto;\n  overflow-y: hidden;\n  display: none;\n  background: var(--background-primary);\n  border-top: 1px solid var(--background-modifier-border);\n  scrollbar-color: var(--scrollbar-thumb-bg) transparent;\n}\n.lmd-db-sticky-x-scroll.is-visible { display: block; }\n.lmd-db-sticky-x-scroll-inner { height: 1px; min-width: 100%; }\n.lmd-db-sticky-x-scroll::-webkit-scrollbar { height: 12px; }\n.lmd-db-sticky-x-scroll::-webkit-scrollbar-thumb {\n  background: var(--scrollbar-thumb-bg);\n  border-radius: 999px;\n}\n.lmd-db-sticky-x-scroll::-webkit-scrollbar-track { background: transparent; }\n
+
+/* 0.9.2 — viewport-fixed horizontal scrollbar + Ctrl-wheel whole-view zoom. */
+.lmd-db-sticky-x-scroll {
+  position: fixed !important;
+  z-index: 10000 !important;
+  box-sizing: border-box;
+  height: 18px;
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+  background: var(--background-primary);
+  border-top: 1px solid var(--background-modifier-border);
+  pointer-events: auto;
+}
+.lmd-db-sticky-x-scroll.is-visible { display: block !important; }
+.lmd-db-sticky-x-scroll-inner { height: 1px; }
+/* Native table scrollbar is hidden; the viewport bar above is the sole control. */
+.lmd-db-table-wrap.has-sticky-x-scroll { scrollbar-width: none !important; }
+.lmd-db-table-wrap.has-sticky-x-scroll::-webkit-scrollbar { height: 0 !important; }
+
+
+/* 0.9.3 — viewport-owned horizontal scrolling for Table and Board. */
+.lmd-db-table-wrap,
+.lmd-db-board {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.lmd-db-table-wrap.has-sticky-x-scroll,
+.lmd-db-board.has-sticky-x-scroll {
+  scrollbar-width: none !important;
+}
+.lmd-db-table-wrap.has-sticky-x-scroll::-webkit-scrollbar,
+.lmd-db-board.has-sticky-x-scroll::-webkit-scrollbar {
+  height: 0 !important;
+}
+.lmd-db-sticky-x-scroll {
+  position: fixed !important;
+  z-index: 2147483000 !important;
+  height: 18px !important;
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+  display: none !important;
+  box-sizing: border-box !important;
+  background: var(--background-primary) !important;
+  border-top: 1px solid var(--background-modifier-border) !important;
+  pointer-events: auto !important;
+}
+.lmd-db-sticky-x-scroll.is-visible { display: block !important; }
+.lmd-db-sticky-x-scroll-inner { height: 1px !important; min-width: 100% !important; }
+.lmd-db-sticky-x-scroll::-webkit-scrollbar { height: 12px !important; }
+.lmd-db-sticky-x-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-bg) !important;
+  border-radius: 999px !important;
+}
+.lmd-db-sticky-x-scroll::-webkit-scrollbar-track { background: transparent !important; }
+
+
+/* 0.9.4 — bottom-flush, thin viewport horizontal scrollbar. */
+.lmd-db-sticky-x-scroll {
+  height: 9px !important;
+  min-height: 9px !important;
+  background: transparent !important;
+  border-top: 0 !important;
+}
+.lmd-db-sticky-x-scroll-inner {
+  height: 1px !important;
+}
+.lmd-db-sticky-x-scroll::-webkit-scrollbar {
+  height: 7px !important;
+}
+.lmd-db-sticky-x-scroll::-webkit-scrollbar-thumb {
+  min-width: 28px;
+  border-radius: 999px !important;
+  background: var(--scrollbar-thumb-bg) !important;
+}
+.lmd-db-sticky-x-scroll::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+
+/* 0.9.5 — slightly higher and slightly thicker viewport scrollbar. */
+.lmd-db-sticky-x-scroll { height: 11px !important; min-height: 11px !important; }
+.lmd-db-sticky-x-scroll::-webkit-scrollbar { height: 9px !important; }
+.lmd-db-sticky-x-scroll::-webkit-scrollbar-thumb { min-width: 30px; }
+
+
+/* 0.9.6 — Excel-style fill handle. */
+.lmd-db-data-cell.is-cell-selected { overflow: visible !important; }
+.lmd-db-fill-handle {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--background-primary);
+  border-radius: 2px;
+  background: var(--interactive-accent);
+  cursor: crosshair;
+  z-index: 80;
+  box-sizing: border-box;
+}
+.lmd-db-data-cell.is-fill-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 70%, transparent);
+  background: color-mix(in srgb, var(--interactive-accent) 5%, transparent);
+  z-index: 30;
+}
+.lmd-db-is-fill-dragging, .lmd-db-is-fill-dragging * { cursor: crosshair !important; user-select: none !important; }
+
+
+/* 0.10.0 Calendar View */
+.lmd-db-calendar-toolbar { align-items: center; }
+.lmd-db-calendar-month-title {
+  margin: 10px 16px 6px;
+  font-size: 1.2em;
+  font-weight: 650;
+}
+.lmd-db-calendar {
+  margin: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(110px, 1fr));
+  border-top: 1px solid var(--background-modifier-border);
+  border-left: 1px solid var(--background-modifier-border);
+  min-width: 770px;
+}
+.lmd-db-calendar-weekday {
+  padding: 7px 8px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  text-align: center;
+  background: var(--background-secondary);
+  border-right: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.lmd-db-calendar-day {
+  position: relative;
+  min-height: 118px;
+  padding: 6px;
+  background: var(--background-primary);
+  border-right: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+  transition: background-color 80ms ease;
+}
+.lmd-db-calendar-day.is-outside-month { background: color-mix(in srgb, var(--background-secondary) 45%, var(--background-primary)); }
+.lmd-db-calendar-day.is-outside-month .lmd-db-calendar-day-number { color: var(--text-faint); }
+.lmd-db-calendar-day.is-today .lmd-db-calendar-day-number {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 23px; height: 23px; padding: 0 5px; border-radius: 999px;
+  color: var(--text-on-accent); background: var(--interactive-accent);
+}
+.lmd-db-calendar-day.is-drop-target { background: color-mix(in srgb, var(--interactive-accent) 8%, var(--background-primary)); }
+.lmd-db-calendar-day-number { font-size: var(--font-ui-smaller); color: var(--text-muted); margin-bottom: 5px; }
+.lmd-db-calendar-items { display: flex; flex-direction: column; gap: 3px; }
+.lmd-db-calendar-item {
+  display: flex; align-items: center; gap: 5px;
+  min-width: 0; padding: 4px 6px; border-radius: 5px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-primary-alt);
+  cursor: grab;
+}
+.lmd-db-calendar-item:active { cursor: grabbing; }
+.lmd-db-calendar-item.is-dragging { opacity: .45; }
+.lmd-db-calendar-item-icon { display: inline-flex; flex: 0 0 auto; color: var(--text-faint); }
+.lmd-db-calendar-item-icon svg { width: 13px; height: 13px; }
+.lmd-db-calendar-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-ui-smaller); }
+.lmd-db-calendar-undated { margin: 14px 16px 4px; padding: 8px 10px; border: 1px solid var(--background-modifier-border); border-radius: 7px; }
+.lmd-db-calendar-undated-head { color: var(--text-muted); font-size: var(--font-ui-smaller); margin-bottom: 6px; }
+.lmd-db-calendar-undated-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.lmd-db-calendar-undated-item { padding: 4px 7px; border-radius: 5px; background: var(--background-secondary); cursor: grab; font-size: var(--font-ui-smaller); }
+
+
+/* 0.10.1 Calendar drag/selection hardening */
+.lmd-db-is-calendar-dragging,
+.lmd-db-is-calendar-dragging * {
+  user-select: none !important;
+}
+.lmd-db-calendar-item.is-selected,
+.lmd-db-calendar-undated-item.is-selected {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 68%, transparent);
+  background: color-mix(in srgb, var(--interactive-accent) 11%, var(--background-secondary)) !important;
+}
+.lmd-db-calendar-item.is-dragging,
+.lmd-db-calendar-undated-item.is-dragging {
+  opacity: .42;
+}
+
+/* 0.10.2 Calendar card content + density polish */
+.lmd-db-calendar-day {
+  min-height: 132px;
+  padding: 6px 5px;
+}
+.lmd-db-calendar-items { gap: 4px; }
+.lmd-db-calendar-item {
+  display: block;
+  min-width: 0;
+  padding: 5px 6px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lmd-db-calendar-item-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.lmd-db-calendar-item-title {
+  min-width: 0;
+  flex: 1 1 auto;
+  font-weight: 550;
+}
+.lmd-db-calendar-item-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 60%, transparent);
+}
+.lmd-db-calendar-item-property {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: calc(var(--font-ui-smaller) * .92);
+  line-height: 1.3;
+}
+.lmd-db-calendar-item-property-name {
+  color: var(--text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lmd-db-calendar-item-property-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+.lmd-db-calendar-item-property-value.lmd-db-multiselect-chips,
+.lmd-db-calendar-item-property-value.lmd-db-relation-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  overflow: visible;
+  white-space: normal;
+}
+.lmd-db-calendar-item-property .lmd-db-option-chip,
+.lmd-db-calendar-item-property .lmd-db-relation-chip {
+  min-height: 17px;
+  max-width: 100%;
+  padding: 0 5px;
+  font-size: calc(var(--font-ui-smaller) * .88);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lmd-db-calendar-markdown {
+  white-space: normal;
+  overflow: hidden;
+  max-height: 3.9em;
+}
+.lmd-db-calendar-markdown > :first-child { margin-top: 0; }
+.lmd-db-calendar-markdown > :last-child { margin-bottom: 0; }
+.lmd-db-calendar-markdown p,
+.lmd-db-calendar-markdown ul,
+.lmd-db-calendar-markdown ol { margin-block: 0 2px; padding-inline-start: 15px; }
+.lmd-db-calendar-undated-item .lmd-db-calendar-item-head { min-width: 0; }
+.lmd-db-calendar-undated-item .lmd-db-calendar-item-title { max-width: 220px; }
+
+/* 0.10.3 — rich Table Group labels */
+.lmd-db-table-group-name.is-special {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: calc(100% - 86px);
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.lmd-db-table-group-name.is-special .lmd-db-multiselect-chip,
+.lmd-db-table-group-name.is-special .lmd-db-relation-chip {
+  margin: 0;
+  flex: 0 0 auto;
+}
+.lmd-db-table-group-name.is-relation .lmd-db-relation-chip {
+  min-height: 22px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+/* 0.11.0 — Timeline view */
+.lmd-db-timeline-toolbar { align-items: center; }
+.lmd-db-timeline {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 16px 16px;
+  box-sizing: border-box;
+}
+.lmd-db-timeline-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(132px, 132px);
+  width: max-content;
+  min-height: 340px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--background-primary);
+}
+.lmd-db-timeline-day {
+  min-width: 0;
+  border-right: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+  transition: background-color .12s ease;
+}
+.lmd-db-timeline-day:last-child { border-right: 0; }
+.lmd-db-timeline-day.is-today { background: color-mix(in srgb, var(--interactive-accent) 4%, var(--background-primary)); }
+.lmd-db-timeline-day.is-drop-target { background: color-mix(in srgb, var(--interactive-accent) 10%, var(--background-primary)); }
+.lmd-db-timeline-day-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 9px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: color-mix(in srgb, var(--background-secondary) 75%, var(--background-primary));
+}
+.lmd-db-timeline-day.is-today .lmd-db-timeline-day-head { color: var(--interactive-accent); font-weight: 600; }
+.lmd-db-timeline-day-week { font-size: var(--font-ui-smaller); color: var(--text-muted); }
+.lmd-db-timeline-day-date { font-size: var(--font-ui-small); }
+.lmd-db-timeline-day-body { display: flex; flex-direction: column; gap: 6px; min-height: 290px; padding: 7px; }
+.lmd-db-timeline-card {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 7px;
+  background: var(--background-primary-alt);
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  cursor: grab;
+  user-select: none;
+}
+.lmd-db-timeline-card:active { cursor: grabbing; }
+.lmd-db-timeline-card.is-dragging { opacity: .4; }
+.lmd-db-timeline-card-icon { display: inline-flex; flex: 0 0 auto; color: var(--text-faint); }
+.lmd-db-timeline-card-icon svg { width: 13px; height: 13px; }
+.lmd-db-timeline-card-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--font-ui-smaller); }
+.lmd-db-timeline-undated { margin: 0 16px 10px; padding: 8px 10px; border: 1px solid var(--background-modifier-border); border-radius: 8px; }
+.lmd-db-timeline-undated-head { margin-bottom: 6px; color: var(--text-muted); font-size: var(--font-ui-smaller); }
+.lmd-db-timeline-undated-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.lmd-db-timeline-undated-card { padding: 4px 7px; border-radius: 5px; background: var(--background-secondary); cursor: grab; font-size: var(--font-ui-smaller); user-select: none; }
+.lmd-db-timeline-empty { margin: 18px; padding: 18px; border: 1px dashed var(--background-modifier-border); border-radius: 8px; color: var(--text-muted); }
+
+/* 0.11.1 Calendar scales + anchored picker */
+.lmd-db-calendar-anchor-menu {
+  position: fixed;
+  z-index: 10000;
+  min-width: 128px;
+  padding: 5px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+}
+.lmd-db-calendar-anchor-menu-item {
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-normal);
+  text-align: left;
+}
+.lmd-db-calendar-anchor-menu-item:hover { background: var(--background-modifier-hover); }
+.lmd-db-calendar-anchor-menu-check { display: inline-flex; color: var(--text-accent); }
+.lmd-db-calendar-anchor-menu-check svg { width: 14px; height: 14px; }
+
+.lmd-db-calendar-year {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 1fr));
+  gap: 12px;
+  padding: 0 16px 12px;
+  min-width: 840px;
+}
+.lmd-db-calendar-year-month {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-primary);
+}
+.lmd-db-calendar-year-month-title {
+  padding: 8px 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+}
+.lmd-db-calendar-year-mini {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.lmd-db-calendar-year-weekday {
+  padding: 5px 2px;
+  text-align: center;
+  font-size: var(--font-ui-smaller);
+  color: var(--text-faint);
+}
+.lmd-db-calendar-year-day {
+  position: relative;
+  min-height: 34px;
+  padding: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--background-modifier-border) 65%, transparent);
+  cursor: pointer;
+}
+.lmd-db-calendar-year-day:nth-child(7n) { border-right: 0; }
+.lmd-db-calendar-year-day.is-empty { cursor: default; background: var(--background-secondary-alt); opacity: .45; }
+.lmd-db-calendar-year-day.is-today .lmd-db-calendar-year-day-number {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 20px; padding: 0 4px; border-radius: 999px;
+  background: var(--interactive-accent); color: var(--text-on-accent);
+}
+.lmd-db-calendar-year-day.is-drop-target { background: color-mix(in srgb, var(--interactive-accent) 10%, var(--background-primary)); }
+.lmd-db-calendar-year-day-number { font-size: var(--font-ui-smaller); }
+.lmd-db-calendar-year-day-count {
+  position: absolute; right: 4px; bottom: 3px;
+  min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--background-secondary); color: var(--text-muted); font-size: 10px;
+}
+
+.lmd-db-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(210px, 1fr));
+  gap: 0;
+  min-width: 1470px;
+  margin: 0 16px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.lmd-db-calendar-week-day {
+  min-height: 480px;
+  padding: 8px;
+  border-right: 1px solid var(--background-modifier-border);
+  background: var(--background-primary);
+}
+.lmd-db-calendar-week-day:last-child { border-right: 0; }
+.lmd-db-calendar-week-day.is-today { background: color-mix(in srgb, var(--interactive-accent) 4%, var(--background-primary)); }
+.lmd-db-calendar-week-day.is-drop-target { background: color-mix(in srgb, var(--interactive-accent) 9%, var(--background-primary)); }
+.lmd-db-calendar-week-day-head {
+  position: sticky; top: 0; z-index: 1;
+  margin: -8px -8px 8px; padding: 8px 10px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-weight: 600;
+}
+
+.lmd-db-calendar-day-view {
+  margin: 0 16px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background-primary);
+}
+.lmd-db-calendar-day-view-head {
+  padding: 9px 12px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.lmd-db-calendar-day-view-body {
+  min-height: 420px;
+  padding: 10px;
+}
+.lmd-db-calendar-day-view-body.is-today { background: color-mix(in srgb, var(--interactive-accent) 3%, var(--background-primary)); }
+.lmd-db-calendar-day-view-body.is-drop-target { background: color-mix(in srgb, var(--interactive-accent) 9%, var(--background-primary)); }
+.lmd-db-calendar-day-view .lmd-db-calendar-item { max-width: 680px; }
+
+@media (max-width: 1100px) {
+  .lmd-db-calendar-year { grid-template-columns: repeat(2, minmax(260px, 1fr)); min-width: 560px; }
+}
+
+/* 0.11.2 — Calendar Date + Time */
+.lmd-db-calendar-item-time {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.lmd-db-calendar-time-grid {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--background-primary);
+}
+
+.lmd-db-calendar-time-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  min-height: 54px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.lmd-db-calendar-time-row:last-child { border-bottom: 0; }
+
+.lmd-db-calendar-time-label {
+  padding: 7px 8px;
+  text-align: right;
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  border-right: 1px solid var(--background-modifier-border);
+  user-select: none;
+}
+
+.lmd-db-calendar-time-lane {
+  min-width: 0;
+  min-height: 54px;
+  padding: 5px 7px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lmd-db-calendar-time-lane.is-drop-target {
+  background: var(--background-modifier-hover);
+  box-shadow: inset 0 0 0 1px var(--interactive-accent);
+}
+
+.lmd-db-calendar-time-lane > .lmd-db-calendar-item {
+  min-width: 190px;
+  max-width: min(360px, 100%);
+}
+
+/* 0.11.3 — Calendar UX: filtering, fast date jump, focus date, year preview */
+.lmd-db-calendar-jump-menu {
+  min-width: 210px;
+  padding: 10px;
+  gap: 7px;
+}
+.lmd-db-calendar-jump-label {
+  font-size: var(--font-ui-smaller);
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+.lmd-db-calendar-jump-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.lmd-db-calendar-jump-go { width: 100%; margin-top: 6px; }
+.lmd-db-calendar-rule-bar { margin: 0 16px 10px; }
+.lmd-db-calendar-year-month-button {
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.lmd-db-calendar-year-month-button:hover { background: var(--background-modifier-hover); }
+.lmd-db-calendar-year-preview {
+  position: fixed;
+  z-index: 10000;
+  width: 220px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-primary);
+  box-shadow: var(--shadow-s);
+  pointer-events: none;
+}
+.lmd-db-calendar-year-preview-title { font-weight: 600; margin-bottom: 5px; }
+.lmd-db-calendar-year-preview-item { padding: 2px 0; font-size: var(--font-ui-small); }
+.lmd-db-calendar-year-preview-more { padding-top: 4px; color: var(--text-muted); font-size: var(--font-ui-smaller); }
+.lmd-db-calendar-selection-safe,
+.lmd-db-calendar-selection-safe * { -webkit-user-select: none; user-select: none; }
+.lmd-db-calendar-selection-safe .markdown-rendered,
+.lmd-db-calendar-selection-safe input,
+.lmd-db-calendar-selection-safe textarea { -webkit-user-select: text; user-select: text; }
+body.lmd-db-is-calendar-dragging .lmd-db-calendar-selection-safe,
+body.lmd-db-is-calendar-dragging .lmd-db-calendar-selection-safe * { -webkit-user-select: none !important; user-select: none !important; }
+
+/* 0.12.0 — Aggregate / Shadow Database */
+.lmd-db-aggregate-source-list,
+.lmd-db-aggregate-target-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 360px;
+  overflow: auto;
+  margin: 10px 0 14px;
+}
+.lmd-db-aggregate-source-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border-radius: var(--radius-s);
+  background: var(--background-secondary);
+  cursor: pointer;
+}
+.lmd-db-aggregate-source-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-aggregate-target-button { text-align: left; }
+.lmd-db-aggregate-warning { color: var(--text-warning); }
+
+/* 0.12.1 Calendar Shadow Sources */
+.lmd-db-shadow-source-list{display:flex;flex-direction:column;gap:8px;margin:12px 0;max-height:52vh;overflow:auto}
+.lmd-db-shadow-source-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,220px);gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--background-modifier-border);border-radius:8px;background:var(--background-secondary)}
+.lmd-db-shadow-source-toggle{display:flex;align-items:center;gap:8px;min-width:0}
+.lmd-db-shadow-source-toggle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lmd-db-shadow-source-date{width:100%}
+.lmd-db-calendar-shadow-item{opacity:.62;filter:saturate(.15);border-style:dashed!important;background:color-mix(in srgb,var(--background-secondary) 88%,var(--text-muted) 12%)!important}
+.lmd-db-calendar-shadow-item:hover{opacity:.82;filter:saturate(.3)}
+.lmd-db-calendar-shadow-source{font-size:.72em;color:var(--text-faint);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lmd-db-calendar-shadow-item .lmd-db-calendar-item-icon{opacity:.72}
+
+/* 0.12.3 — integrated Notion-like date/time/range editor */
+.lmd-db-date-cell { position: relative; }
+.lmd-db-date-cell-button {
+  width: 100%; min-height: 28px; padding: 3px 6px;
+  border: 0; border-radius: var(--radius-s); background: transparent;
+  text-align: left; color: var(--text-normal); font: inherit; cursor: pointer;
+}
+.lmd-db-date-cell-button:hover { background: var(--background-modifier-hover); }
+.lmd-db-date-cell-button.is-empty::after { content: ""; }
+.lmd-db-date-popover {
+  position: fixed; z-index: 12000; width: 320px; padding: 12px;
+  border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m);
+  background: var(--background-primary); box-shadow: var(--shadow-l);
+}
+.lmd-db-date-popover-title { margin-bottom: 9px; font-size: var(--font-ui-smaller); color: var(--text-muted); }
+.lmd-db-date-section { display:flex; flex-direction:column; gap:5px; }
+.lmd-db-date-section + .lmd-db-date-section { margin-top:8px; }
+.lmd-db-date-section-label { font-size:var(--font-ui-smaller); color:var(--text-muted); }
+.lmd-db-date-value-row { display:grid; grid-template-columns:minmax(0,1fr) 92px; gap:7px; align-items:center; }
+.lmd-db-date-text, .lmd-db-date-time { width:100%; min-width:0; box-sizing:border-box; }
+.lmd-db-date-time.is-hidden, .lmd-db-date-end-section.is-hidden { display:none; }
+.lmd-db-date-calendar { margin-top:9px; padding-top:9px; border-top:1px solid var(--background-modifier-border); }
+.lmd-db-date-calendar-header { display:grid; grid-template-columns:30px 1fr 30px; align-items:center; margin-bottom:5px; }
+.lmd-db-date-calendar-header button { border:0; background:transparent; box-shadow:none; padding:2px 4px; font-size:18px; }
+.lmd-db-date-calendar-header button:hover { background:var(--background-modifier-hover); }
+.lmd-db-date-calendar-month { text-align:center; font-weight:600; }
+.lmd-db-date-calendar-week, .lmd-db-date-calendar-days { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.lmd-db-date-calendar-week { color:var(--text-muted); font-size:var(--font-ui-smaller); text-align:center; margin-bottom:2px; }
+.lmd-db-date-calendar-day { min-width:0; height:30px; padding:0; border:0; border-radius:7px; background:transparent; box-shadow:none; color:var(--text-normal); }
+.lmd-db-date-calendar-day:hover { background:var(--background-modifier-hover); }
+.lmd-db-date-calendar-day.is-outside { color:var(--text-faint); }
+.lmd-db-date-calendar-day.is-selected { background:var(--interactive-accent); color:var(--text-on-accent); }
+.lmd-db-date-calendar-day.is-today:not(.is-selected) { outline:1px solid var(--interactive-accent); outline-offset:-2px; }
+.lmd-db-date-options { margin-top:9px; padding-top:7px; border-top:1px solid var(--background-modifier-border); }
+.lmd-db-date-toggle-row { display:flex; align-items:center; gap:8px; min-height:30px; cursor:pointer; user-select:none; }
+.lmd-db-date-toggle-row input { margin:0; }
+.lmd-db-date-end-section { margin-top:4px; padding:7px 8px 0; border-top:1px solid color-mix(in srgb,var(--background-modifier-border) 60%,transparent); }
+.lmd-db-date-popover-actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-top:10px; padding-top:9px; border-top:1px solid var(--background-modifier-border); }
+/* Week ranges occupy real horizontal distance instead of being printed as a duration number. */
+.lmd-db-calendar-week-duration-area {
+  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, minmax(210px,1fr));
+  gap: 3px; padding: 7px 8px; background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+.lmd-db-calendar-week-duration-bar {
+  min-width: 0; padding: 5px 8px; border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--interactive-accent) 13%, var(--background-primary));
+  border: 1px solid color-mix(in srgb, var(--interactive-accent) 25%, var(--background-modifier-border));
+  display: flex; align-items: center; gap: 8px; cursor: grab; overflow: hidden;
+}
+.lmd-db-calendar-week-duration-title { font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lmd-db-calendar-week-duration-meta { margin-left: auto; color: var(--text-muted); font-size: var(--font-ui-smaller); white-space: nowrap; }
+
+/* Day scale: timed records are positioned by start time and their height represents duration. */
+.lmd-db-calendar-day-all-day { display: grid; grid-template-columns: 58px minmax(0,1fr); border-bottom: 1px solid var(--background-modifier-border); }
+.lmd-db-calendar-day-all-day-label { padding: 8px; text-align: right; color: var(--text-muted); font-size: var(--font-ui-smaller); border-right: 1px solid var(--background-modifier-border); }
+.lmd-db-calendar-day-all-day-items { padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 5px; }
+.lmd-db-calendar-time-grid { position: relative; overflow: visible; }
+.lmd-db-calendar-time-event-layer { position: absolute; z-index: 3; top: 0; left: 58px; right: 0; height: 1296px; pointer-events: none; }
+.lmd-db-calendar-time-event {
+  position: absolute; box-sizing: border-box; min-height: 32px; overflow: hidden;
+  padding: 4px; border-radius: var(--radius-s); background: var(--background-primary);
+  border: 1px solid color-mix(in srgb, var(--interactive-accent) 34%, var(--background-modifier-border));
+  box-shadow: var(--shadow-s); pointer-events: auto; cursor: grab;
+}
+.lmd-db-calendar-time-event .lmd-db-calendar-item-properties { display: none; }
+.lmd-db-calendar-time-event .lmd-db-calendar-item-head { min-height: 22px; }
+
+/* 0.12.4 — compact, zoom-aware date editor and denser day events */
+.lmd-db-date-popover {
+  width: 300px;
+  padding: 10px;
+  transform-origin: top left;
+}
+.lmd-db-date-popover-title { margin-bottom: 6px; }
+.lmd-db-date-section { padding: 5px 6px; border-radius: var(--radius-s); }
+.lmd-db-date-section.is-active { background: color-mix(in srgb, var(--interactive-accent) 7%, transparent); }
+.lmd-db-date-section + .lmd-db-date-section { margin-top: 3px; }
+.lmd-db-date-end-section { margin-top: 3px; padding: 5px 6px; border-top: 0; }
+.lmd-db-date-calendar { margin-top: 5px; padding-top: 6px; }
+.lmd-db-date-calendar-header { margin-bottom: 3px; }
+.lmd-db-date-calendar-day { height: 27px; border-radius: 6px; }
+.lmd-db-date-options { margin-top: 5px; padding-top: 5px; }
+.lmd-db-date-toggle-row { min-height: 26px; }
+.lmd-db-date-popover-actions { margin-top: 6px; padding-top: 6px; }
+
+/* Timed day cards should use their duration for height, not a huge fixed visual width. */
+.lmd-db-calendar-time-event { padding: 4px 6px; }
+.lmd-db-calendar-time-event .lmd-db-calendar-item-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
+  overflow: hidden;
+}
+.lmd-db-calendar-time-event .lmd-db-calendar-item-property {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr);
+  gap: 4px;
+  min-width: 0;
+  font-size: var(--font-ui-smaller);
+}
+.lmd-db-calendar-time-event .lmd-db-calendar-item-property-value { min-width: 0; }
+.lmd-db-calendar-time-event .lmd-db-multiselect-chips,
+.lmd-db-calendar-time-event .lmd-db-relation-chips { display:flex; flex-wrap:wrap; gap:3px; }
+
+/* 0.12.5 — compact day cards, overlap-aware lanes, side properties */
+.lmd-db-calendar-time-event {
+  width: max-content;
+  min-width: 150px;
+  max-width: 420px;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 6px;
+}
+.lmd-db-calendar-time-event > .lmd-db-calendar-item-head {
+  flex: 0 0 auto;
+  min-width: 132px;
+  max-width: 220px;
+}
+.lmd-db-calendar-time-event.has-side-content { max-width: 520px; }
+.lmd-db-calendar-time-event-side {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 300px;
+}
+.lmd-db-calendar-time-event-side .lmd-db-multiselect-chips,
+.lmd-db-calendar-time-event-side .lmd-db-relation-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+.lmd-db-calendar-time-text-preview {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border-radius: var(--radius-s);
+  font-weight: 700;
+  line-height: 1;
+}
+/* The old inline timed-property block is replaced by the sidecar renderer above. */
+.lmd-db-calendar-time-event > .lmd-db-calendar-item-properties { display: none !important; }
+
+/* 0.12.6 — collision-safe sidecars and click-pinned text preview. */
+.lmd-db-calendar-time-event-side {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: visible;
+  max-width: none;
+}
+.lmd-db-calendar-time-event-side .lmd-db-multiselect-chips,
+.lmd-db-calendar-time-event-side .lmd-db-relation-chips { flex-wrap: nowrap; }
+.lmd-db-calendar-time-event { max-width: none; }
+.lmd-db-calendar-time-event.has-side-content { max-width: none; }
+.lmd-db-calendar-text-popover {
+  position: fixed;
+  z-index: 10050;
+  width: min(360px, calc(100vw - 16px));
+  max-height: min(320px, calc(100vh - 16px));
+  overflow: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-primary);
+  box-shadow: var(--shadow-l);
+}
+.lmd-db-calendar-text-popover-title { font-weight: 600; margin-bottom: 7px; color: var(--text-muted); }
+.lmd-db-calendar-text-popover-body { line-height: 1.5; }
+.lmd-db-calendar-time-text-preview { cursor: pointer; }
+
+/* 0.12.7 — Checkbox property */
+.lmd-db-checkbox-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+.lmd-db-checkbox-input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--interactive-accent);
+}
+
+/* 0.12.7 — Notion-style bottom add row for an ungrouped Table. */
+.lmd-db-table-bottom-add-row td {
+  border-top: 1px solid var(--background-modifier-border);
+}
+.lmd-db-table-bottom-add-cell {
+  padding: 6px 8px !important;
+  text-align: left;
+}
+.lmd-db-table-bottom-add-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 4px 6px;
+  height: auto;
+}
+.lmd-db-table-bottom-add-button:hover {
+  color: var(--text-normal);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-table-bottom-add-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* 0.12.8 — draggable View tabs */
+.lmd-db-view-tab { position: relative; }
+.lmd-db-view-tab.is-dragging { opacity: .45; }
+.lmd-db-view-tab.is-view-drop-before::before,
+.lmd-db-view-tab.is-view-drop-after::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--interactive-accent);
+}
+.lmd-db-view-tab.is-view-drop-before::before { left: -3px; }
+.lmd-db-view-tab.is-view-drop-after::after { right: -3px; }
+
+/* 0.12.8 — high-contrast checkbox. Unchecked is quiet; checked is a solid accent tile. */
+.lmd-db-checkbox-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 0 !important;
+  border-radius: 4px;
+  background: var(--background-modifier-hover);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text-faint) 28%, transparent);
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background 100ms ease, box-shadow 100ms ease, transform 80ms ease;
+}
+.lmd-db-checkbox-input:hover { background: var(--background-modifier-active-hover); }
+.lmd-db-checkbox-input:checked {
+  background: var(--interactive-accent);
+  box-shadow: none;
+}
+.lmd-db-checkbox-input:checked::after {
+  content: "✓";
+  color: var(--text-on-accent);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+.lmd-db-checkbox-input:active { transform: scale(.92); }
+
+
+/* 0.12.8-r1 — robust checkbox button. Never rely on native input appearance. */
+.lmd-db-checkbox-button {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0;
+  border: 1.5px solid var(--text-faint);
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  cursor: pointer;
+}
+.lmd-db-checkbox-button:hover {
+  border-color: var(--text-muted);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-checkbox-button.is-checked {
+  border-color: var(--interactive-accent);
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+}
+.lmd-db-checkbox-button.is-checked svg {
+  width: 13px;
+  height: 13px;
+  stroke-width: 3;
+}
+
+
+/* 0.12.8-r3 — control rows always paint above the body-level row insertion guide.
+   This is a visual safety net in addition to the drag-boundary logic: even if a
+   stale guide reaches the control region for a frame, it is masked by the
+   opaque add-row / add-group surfaces instead of drawing through their labels. */
+.lmd-db-table-bottom-add-row,
+.lmd-db-table-group-add-row,
+.lmd-db-table-new-group-row {
+  position: relative !important;
+  z-index: 100001 !important;
+}
+.lmd-db-table-bottom-add-row > td,
+.lmd-db-table-group-add-row > td,
+.lmd-db-table-new-group-row > td {
+  position: relative !important;
+  z-index: 100002 !important;
+  background: var(--background-primary) !important;
+}
+.lmd-db-table-bottom-add-button,
+.lmd-db-table-group-add-button,
+.lmd-db-table-new-group-button {
+  position: relative !important;
+  z-index: 100003 !important;
+}
+
+/* 0.12.9 — Markdown embedded Database views */
+.lmd-db-embed-host {
+  width: 100%;
+  max-width: 100%;
+  margin: 0.75em 0;
+}
+.lmd-db-embedded {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  padding: 10px;
+  background: var(--background-primary);
+  box-sizing: border-box;
+}
+.lmd-db-embedded .lmd-db-embedded-hidden { display: none !important; }
+.lmd-db-embedded .lmd-db-toolbar { margin-top: 0; }
+.lmd-db-embedded .lmd-db-table-wrap,
+.lmd-db-embedded .lmd-db-board,
+.lmd-db-embedded .lmd-db-calendar { max-width: 100%; }
+.lmd-db-embed-error {
+  padding: 10px 12px;
+  border: 1px solid var(--background-modifier-error-border, var(--background-modifier-border));
+  border-radius: var(--radius-s);
+  color: var(--text-error);
+  background: var(--background-secondary);
+}
+
+/* 0.12.11 — Markdown embed UX */
+.lmd-db-insert-modal .setting-item { align-items: center; }
+.lmd-db-insert-modal .setting-item-control select { min-width: 260px; max-width: 52vw; }
+.lmd-db-modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:20px; }
+
+/* Every Markdown embed owns its own horizontal scrollbar. Never route embedded
+   Table/Board/Timeline scrolling through the database leaf's body-level bar. */
+.lmd-db-embedded .lmd-db-embed-x-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
+  padding-bottom: 8px;
+}
+.lmd-db-embedded .lmd-db-table-wrap.lmd-db-embed-x-scroll,
+.lmd-db-embedded .lmd-db-board.lmd-db-embed-x-scroll,
+.lmd-db-embedded .lmd-db-timeline.lmd-db-embed-x-scroll {
+  scrollbar-width: auto;
+}
+.lmd-db-embedded .lmd-db-embed-x-scroll::-webkit-scrollbar { height: 11px; }
+.lmd-db-embedded .lmd-db-embed-x-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.lmd-db-embedded .lmd-db-embed-x-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-bg, var(--background-modifier-border-hover));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.lmd-db-embedded .lmd-db-embed-x-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-active-thumb-bg, var(--text-faint));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* 0.13.1 — Timeline Rebuild: fixed-range, editor-style horizontal reasoning canvas. */
+.lmd-db-timeline-rebuild {
+  --lmd-timeline-lane-h: 64px;
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  margin: 0 16px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--background-primary);
+}
+.lmd-db-timeline-lane-names { grid-column: 1; background: var(--background-secondary); border-right: 1px solid var(--background-modifier-border); position: relative; z-index: 4; }
+.lmd-db-timeline-lane-corner { position: absolute; inset: 0 0 auto 0; height: 44px; display:flex; align-items:center; padding:0 10px; color:var(--text-muted); font-size:var(--font-ui-smaller); border-bottom:1px solid var(--background-modifier-border); background:var(--background-secondary); }
+.lmd-db-timeline-lane-name { height: var(--lmd-timeline-lane-h); padding: 9px 10px; display:flex; flex-direction:column; justify-content:center; gap:3px; border-bottom:1px solid var(--background-modifier-border); min-width:0; }
+.lmd-db-timeline-lane-name-title { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--font-ui-small); font-weight:600; }
+.lmd-db-timeline-lane-name-shadow { color:var(--text-faint); font-size:var(--font-ui-smaller); }
+.lmd-db-timeline-lane-name.is-shadow { opacity:.72; }
+.lmd-db-timeline-scroll { grid-column:2; min-width:0; overflow-x:auto; overflow-y:hidden; position:relative; scrollbar-width:thin; }
+.lmd-db-timeline-canvas { position:relative; min-height:108px; background-color:var(--background-primary); }
+.lmd-db-timeline-ruler { position:absolute; top:0; left:0; right:0; height:44px; border-bottom:1px solid var(--background-modifier-border); background:color-mix(in srgb,var(--background-secondary) 94%,transparent); z-index:3; }
+.lmd-db-timeline-ruler-hour { position:absolute; top:0; height:44px; border-left:1px solid var(--text-faint); padding:7px 0 0 6px; color:var(--text-muted); font-size:var(--font-ui-smaller); white-space:nowrap; pointer-events:none; }
+.lmd-db-timeline-track { position:absolute; left:0; right:0; height:64px; border-bottom:1px solid var(--background-modifier-border); }
+.lmd-db-timeline-track.is-shadow { background:color-mix(in srgb,var(--background-secondary) 20%,transparent); }
+.lmd-db-timeline-bar { position:absolute; top:18px; height:28px; min-width:14px; display:flex; align-items:center; padding:0 7px; border-radius:5px; background:var(--interactive-accent); color:var(--text-on-accent); box-shadow:0 1px 3px rgba(0,0,0,.12); cursor:grab; user-select:none; overflow:hidden; touch-action:none; z-index:2; }
+.lmd-db-timeline-bar.is-shadow { background:color-mix(in srgb,var(--interactive-accent) 34%,var(--background-modifier-border)); color:var(--text-normal); border:1px dashed color-mix(in srgb,var(--text-muted) 60%,transparent); opacity:.72; box-shadow:none; }
+.lmd-db-timeline-bar.is-dragging { cursor:grabbing; opacity:.55; z-index:20; }
+.lmd-db-timeline-bar-title { position:sticky; left:5px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--font-ui-smaller); font-weight:600; pointer-events:none; }
+body.lmd-db-is-timeline-dragging { user-select:none !important; }
+
+/* 0.13.2 Timeline lane controls */
+.lmd-db-timeline-lane-name { position: relative; }
+.lmd-db-timeline-lane-name-main { display:flex; align-items:center; gap:6px; min-width:0; }
+.lmd-db-timeline-lane-drag { display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--text-faint); cursor:grab; }
+.lmd-db-timeline-lane-drag svg { width:13px; height:13px; }
+.lmd-db-timeline-lane-name:active .lmd-db-timeline-lane-drag { cursor:grabbing; }
+.lmd-db-timeline-lane-name-title { flex:1 1 auto; }
+.lmd-db-timeline-lane-color { width:24px; height:24px; min-width:24px; padding:0; display:inline-flex; align-items:center; justify-content:center; border:0; background:transparent; color:var(--text-muted); box-shadow:none; opacity:.72; }
+.lmd-db-timeline-lane-color:hover { opacity:1; background:var(--background-modifier-hover); }
+.lmd-db-timeline-lane-color svg { width:14px; height:14px; }
+.lmd-db-timeline-lane-name.is-dragging { opacity:.45; }
+.lmd-db-timeline-lane-name.is-drop-before::before,
+.lmd-db-timeline-lane-name.is-drop-after::after { content:""; position:absolute; z-index:20; left:4px; right:4px; height:2px; border-radius:999px; background:var(--interactive-accent); pointer-events:none; }
+.lmd-db-timeline-lane-name.is-drop-before::before { top:-1px; }
+.lmd-db-timeline-lane-name.is-drop-after::after { bottom:-1px; }
+
+.lmd-db-timeline-lane-name.is-color-red { box-shadow: inset 3px 0 var(--color-red); background:color-mix(in srgb,var(--color-red) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-orange { box-shadow: inset 3px 0 var(--color-orange); background:color-mix(in srgb,var(--color-orange) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-yellow { box-shadow: inset 3px 0 var(--color-yellow); background:color-mix(in srgb,var(--color-yellow) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-green { box-shadow: inset 3px 0 var(--color-green); background:color-mix(in srgb,var(--color-green) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-cyan { box-shadow: inset 3px 0 var(--color-cyan); background:color-mix(in srgb,var(--color-cyan) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-blue { box-shadow: inset 3px 0 var(--color-blue); background:color-mix(in srgb,var(--color-blue) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-purple { box-shadow: inset 3px 0 var(--color-purple); background:color-mix(in srgb,var(--color-purple) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-pink { box-shadow: inset 3px 0 var(--color-pink); background:color-mix(in srgb,var(--color-pink) 9%,var(--background-secondary)); }
+.lmd-db-timeline-lane-name.is-color-gray { box-shadow: inset 3px 0 var(--text-muted); background:color-mix(in srgb,var(--text-muted) 9%,var(--background-secondary)); }
+
+.lmd-db-timeline-track.is-color-red .lmd-db-timeline-bar { background:var(--color-red); }
+.lmd-db-timeline-track.is-color-orange .lmd-db-timeline-bar { background:var(--color-orange); }
+.lmd-db-timeline-track.is-color-yellow .lmd-db-timeline-bar { background:var(--color-yellow); color:var(--text-normal); }
+.lmd-db-timeline-track.is-color-green .lmd-db-timeline-bar { background:var(--color-green); }
+.lmd-db-timeline-track.is-color-cyan .lmd-db-timeline-bar { background:var(--color-cyan); color:var(--text-normal); }
+.lmd-db-timeline-track.is-color-blue .lmd-db-timeline-bar { background:var(--color-blue); }
+.lmd-db-timeline-track.is-color-purple .lmd-db-timeline-bar { background:var(--color-purple); }
+.lmd-db-timeline-track.is-color-pink .lmd-db-timeline-bar { background:var(--color-pink); }
+.lmd-db-timeline-track.is-color-gray .lmd-db-timeline-bar { background:var(--text-muted); }
+.lmd-db-timeline-track.is-shadow.is-color-red .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-red) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-orange .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-orange) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-yellow .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-yellow) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-green .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-green) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-cyan .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-cyan) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-blue .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-blue) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-purple .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-purple) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-pink .lmd-db-timeline-bar { background:color-mix(in srgb,var(--color-pink) 42%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow.is-color-gray .lmd-db-timeline-bar { background:color-mix(in srgb,var(--text-muted) 42%,var(--background-modifier-border)); }
+
+/* 0.13.3 — Timeline Bar UX: resize handles, sticky title, custom hover detail. */
+.lmd-db-timeline-bar { overflow: visible; padding-left: 9px; padding-right: 9px; }
+.lmd-db-timeline-bar-title {
+  position: sticky;
+  left: 7px;
+  z-index: 3;
+  max-width: calc(100% - 14px);
+  padding: 0 3px;
+  border-radius: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.lmd-db-timeline-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  z-index: 6;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.lmd-db-timeline-resize.is-left { left: -2px; }
+.lmd-db-timeline-resize.is-right { right: -2px; }
+.lmd-db-timeline-resize::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 58%, transparent);
+  opacity: 0;
+  transition: opacity 100ms ease;
+}
+.lmd-db-timeline-resize.is-left::after { left: 3px; }
+.lmd-db-timeline-resize.is-right::after { right: 3px; }
+.lmd-db-timeline-bar:hover .lmd-db-timeline-resize::after,
+.lmd-db-timeline-bar.is-resizing .lmd-db-timeline-resize::after { opacity: .9; }
+.lmd-db-timeline-bar.is-resizing { cursor: ew-resize; z-index: 22; opacity: .78; }
+.lmd-db-timeline-bar.is-resizing .lmd-db-timeline-bar-title { opacity: .82; }
+.lmd-db-timeline-hover {
+  position: fixed;
+  z-index: 14000;
+  width: max-content;
+  max-width: min(330px, calc(100vw - 16px));
+  padding: 8px 10px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--background-secondary) 96%, black 4%);
+  color: var(--text-normal);
+  box-shadow: var(--shadow-s);
+  pointer-events: none;
+}
+.lmd-db-timeline-hover-title { font-size: var(--font-ui-small); font-weight: 650; margin-bottom: 3px; }
+.lmd-db-timeline-hover-time,
+.lmd-db-timeline-hover-source { font-size: var(--font-ui-smaller); color: var(--text-muted); white-space: nowrap; }
+
+/* 0.13.4 — Timeline Playhead + Log */
+.lmd-db-timeline-rebuild { grid-template-columns: 150px minmax(0, 1fr) var(--lmd-timeline-side-width, 250px); }
+.lmd-db-timeline-log {
+  grid-column: 3;
+  min-width: 0;
+  border-left: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+.lmd-db-timeline-log-head {
+  height: 44px;
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px 0 10px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: 650;
+  letter-spacing: .04em;
+}
+.lmd-db-timeline-log-clear { width: 26px; height: 26px; min-width: 26px; padding: 0; border: 0; background: transparent; box-shadow: none; color: var(--text-muted); display:inline-flex; align-items:center; justify-content:center; }
+.lmd-db-timeline-log-clear:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+.lmd-db-timeline-log-clear svg { width: 14px; height: 14px; }
+.lmd-db-timeline-log-list { min-height: 0; flex: 1 1 auto; overflow-y: auto; padding: 6px 8px 10px; scrollbar-width: thin; }
+.lmd-db-timeline-log-empty { padding: 10px 4px; color: var(--text-faint); font-size: var(--font-ui-smaller); line-height: 1.5; }
+.lmd-db-timeline-log-entry { padding: 7px 7px 8px; border-bottom: 1px solid color-mix(in srgb,var(--background-modifier-border) 70%,transparent); }
+.lmd-db-timeline-log-entry.is-shadow { opacity: .68; }
+.lmd-db-timeline-log-time { color: var(--text-accent); font-size: var(--font-ui-smaller); font-variant-numeric: tabular-nums; }
+.lmd-db-timeline-log-title { margin-top: 2px; color: var(--text-normal); font-size: var(--font-ui-small); font-weight: 600; line-height: 1.3; }
+.lmd-db-timeline-log-source { margin-top: 2px; color: var(--text-faint); font-size: var(--font-ui-smaller); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lmd-db-timeline-playhead { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px solid var(--color-purple); z-index: 12; pointer-events: none; }
+.lmd-db-timeline-playhead-handle { position: absolute; top: 3px; left: -7px; width: 13px; height: 13px; border-radius: 50% 50% 50% 2px; transform: rotate(-45deg); background: var(--color-purple); box-shadow: 0 1px 3px rgba(0,0,0,.25); cursor: ew-resize; pointer-events: auto; touch-action:none; }
+.lmd-db-timeline-playhead-label { position:absolute; top: 20px; left: 5px; padding: 2px 5px; border-radius: 4px; background: color-mix(in srgb,var(--color-purple) 86%,var(--background-primary)); color: white; font-size: 10px; line-height: 1.25; white-space:nowrap; pointer-events:none; box-shadow:0 1px 2px rgba(0,0,0,.18); }
+.lmd-db-timeline-playhead.is-dragging { border-left-width: 3px; }
+.lmd-db-timeline-bar.is-playhead-active { outline: 2px solid color-mix(in srgb,var(--color-purple) 75%,white 25%); outline-offset: 2px; z-index: 5; }
+.lmd-db-timeline-toolbar .lmd-db-toolbar-button.is-active { background: var(--interactive-accent); color: var(--text-on-accent); }
+@media (max-width: 900px) {
+  .lmd-db-timeline-rebuild { grid-template-columns: 130px minmax(0,1fr); }
+  .lmd-db-timeline-log { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--background-modifier-border); max-height: 220px; }
+}
+
+/* 0.13.5 — Timeline Inspector / 播片模式 */
+.lmd-db-timeline-side-head { gap: 6px; }
+.lmd-db-timeline-side-tabs { display:flex; align-items:center; gap:3px; min-width:0; }
+.lmd-db-timeline-side-tab { min-height:26px; padding:3px 8px; border:0; border-radius:5px; background:transparent; box-shadow:none; color:var(--text-muted); font-size:var(--font-ui-smaller); font-weight:650; }
+.lmd-db-timeline-side-tab:hover { background:var(--background-modifier-hover); color:var(--text-normal); }
+.lmd-db-timeline-side-tab.is-active { background:var(--background-modifier-hover); color:var(--text-accent); }
+.lmd-db-timeline-log-list.is-hidden,
+.lmd-db-timeline-inspector-list.is-hidden,
+.lmd-db-timeline-log-clear.is-hidden { display:none; }
+.lmd-db-timeline-inspector-list { min-height:0; flex:1 1 auto; overflow-y:auto; padding:8px; scrollbar-width:thin; }
+.lmd-db-timeline-inspector-time { position:sticky; top:0; z-index:3; margin:-8px -8px 7px; padding:8px 10px; border-bottom:1px solid var(--background-modifier-border); background:color-mix(in srgb,var(--background-secondary) 94%,transparent); backdrop-filter:blur(6px); color:var(--text-accent); font-size:var(--font-ui-small); font-weight:700; font-variant-numeric:tabular-nums; }
+.lmd-db-timeline-inspector-empty { padding:10px 3px; color:var(--text-faint); font-size:var(--font-ui-smaller); line-height:1.5; }
+.lmd-db-timeline-inspector-card { margin-bottom:9px; padding:9px; border:1px solid var(--background-modifier-border); border-radius:8px; background:var(--background-primary); }
+.lmd-db-timeline-inspector-card.is-shadow { opacity:.72; border-style:dashed; }
+.lmd-db-timeline-inspector-title-row { display:flex; align-items:center; gap:6px; min-width:0; }
+.lmd-db-timeline-inspector-title { min-width:0; flex:1 1 auto; padding:0; border:0; background:transparent; box-shadow:none; color:var(--text-normal); text-align:left; font-size:var(--font-ui-small); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+.lmd-db-timeline-inspector-title:hover { color:var(--text-accent); text-decoration:underline; }
+.lmd-db-timeline-inspector-shadow { flex:0 0 auto; padding:1px 5px; border:1px solid var(--background-modifier-border); border-radius:999px; color:var(--text-faint); font-size:10px; }
+.lmd-db-timeline-inspector-range,
+.lmd-db-timeline-inspector-source { margin-top:3px; color:var(--text-muted); font-size:var(--font-ui-smaller); font-variant-numeric:tabular-nums; }
+.lmd-db-timeline-inspector-properties { margin-top:7px; padding-top:6px; border-top:1px solid color-mix(in srgb,var(--background-modifier-border) 70%,transparent); display:flex; flex-direction:column; gap:4px; }
+.lmd-db-timeline-inspector-property { display:grid; grid-template-columns:minmax(58px, .7fr) minmax(0,1.3fr); gap:7px; font-size:var(--font-ui-smaller); line-height:1.35; }
+.lmd-db-timeline-inspector-property-name { color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lmd-db-timeline-inspector-property-value { color:var(--text-muted); overflow-wrap:anywhere; }
+.lmd-db-timeline-inspector-preview { margin-top:8px; padding-top:7px; border-top:1px solid color-mix(in srgb,var(--background-modifier-border) 70%,transparent); color:var(--text-normal); font-size:var(--font-ui-smaller); line-height:1.45; max-height:260px; overflow:auto; }
+.lmd-db-timeline-inspector-preview > :first-child { margin-top:0; }
+.lmd-db-timeline-inspector-preview > :last-child { margin-bottom:0; }
+.lmd-db-timeline-inspector-preview-empty { margin-top:8px; padding-top:7px; border-top:1px solid color-mix(in srgb,var(--background-modifier-border) 70%,transparent); color:var(--text-faint); font-size:var(--font-ui-smaller); }
+
+/* 0.13.7 — Static / Playback modes + per-event color overrides. */
+.lmd-db-timeline-rebuild.is-static { grid-template-columns:150px minmax(0,1fr); }
+.lmd-db-timeline-side-panel.is-hidden { display:none; }
+.lmd-db-timeline-playhead.is-hidden { display:none; }
+.lmd-db-timeline-playback-only.is-hidden { display:none; }
+
+/* A bar-level color must win over its Lane's inherited color. */
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-red { background:var(--color-red); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-orange { background:var(--color-orange); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-yellow { background:var(--color-yellow); color:var(--text-normal); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-green { background:var(--color-green); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-cyan { background:var(--color-cyan); color:var(--text-normal); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-blue { background:var(--color-blue); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-purple { background:var(--color-purple); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-pink { background:var(--color-pink); }
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-color-gray { background:var(--text-muted); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-red { background:color-mix(in srgb,var(--color-red) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-orange { background:color-mix(in srgb,var(--color-orange) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-yellow { background:color-mix(in srgb,var(--color-yellow) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-green { background:color-mix(in srgb,var(--color-green) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-cyan { background:color-mix(in srgb,var(--color-cyan) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-blue { background:color-mix(in srgb,var(--color-blue) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-purple { background:color-mix(in srgb,var(--color-purple) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-pink { background:color-mix(in srgb,var(--color-pink) 52%,var(--background-modifier-border)); }
+.lmd-db-timeline-track.is-shadow .lmd-db-timeline-bar.is-color-gray { background:color-mix(in srgb,var(--text-muted) 52%,var(--background-modifier-border)); }
+
+/* 0.13.8 — true instant / point events */
+.lmd-db-timeline-bar.is-instant {
+  min-width: 18px;
+  height: 30px;
+  padding: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none;
+  overflow: visible;
+  color: var(--interactive-accent);
+}
+.lmd-db-timeline-bar.is-instant .lmd-db-timeline-point-glyph {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 22px;
+  line-height: 1;
+  color: currentColor;
+  text-shadow: 0 1px 2px rgba(0,0,0,.18);
+  pointer-events: none;
+}
+.lmd-db-timeline-bar.is-instant .lmd-db-timeline-bar-title {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 180px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: color-mix(in srgb,var(--background-primary) 88%,transparent);
+  color: var(--text-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.lmd-db-timeline-bar.is-instant .lmd-db-timeline-resize.is-left { display:none !important; }
+.lmd-db-timeline-bar.is-instant .lmd-db-timeline-resize.is-right { display:none !important; }
+.lmd-db-timeline-bar.is-instant.is-shadow { opacity: .64; }
+.lmd-db-timeline-bar.is-instant.is-playhead-active .lmd-db-timeline-point-glyph {
+  filter: drop-shadow(0 0 4px currentColor);
+  transform: translate(-50%,-50%) scale(1.18);
+}
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant { color: var(--interactive-accent); }
+.lmd-db-timeline-track.is-color-red .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-red { color:var(--color-red); }
+.lmd-db-timeline-track.is-color-orange .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-orange { color:var(--color-orange); }
+.lmd-db-timeline-track.is-color-yellow .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-yellow { color:var(--color-yellow); }
+.lmd-db-timeline-track.is-color-green .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-green { color:var(--color-green); }
+.lmd-db-timeline-track.is-color-cyan .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-cyan { color:var(--color-cyan); }
+.lmd-db-timeline-track.is-color-blue .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-blue { color:var(--color-blue); }
+.lmd-db-timeline-track.is-color-purple .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-purple { color:var(--color-purple); }
+.lmd-db-timeline-track.is-color-pink .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-pink { color:var(--color-pink); }
+.lmd-db-timeline-track.is-color-gray .lmd-db-timeline-bar.is-instant,
+.lmd-db-timeline-track .lmd-db-timeline-bar.is-instant.is-color-gray { color:var(--text-muted); }
+
+
+/* 0.13.11 — horizontal auto range / resizable side panel / time pins */
+.lmd-db-timeline-auto-range { cursor: default; }
+.lmd-db-timeline-pin-source { cursor: grab; }
+.lmd-db-timeline-pin-source:active { cursor: grabbing; }
+.lmd-db-timeline-side-panel { position: relative; min-width: 180px; max-width: 640px; height: var(--lmd-timeline-side-height, 420px); max-height: none; align-self: start; overflow: hidden; }
+.lmd-db-timeline-side-resizer {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  z-index: 30;
+  cursor: ew-resize;
+  touch-action: none;
+}
+.lmd-db-timeline-side-resizer::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: transparent;
+}
+.lmd-db-timeline-side-resizer:hover::after,
+.lmd-db-timeline-side-panel.is-resizing .lmd-db-timeline-side-resizer::after { background: var(--interactive-accent); }
+.lmd-db-timeline-side-panel.is-resizing,
+.lmd-db-timeline-side-panel.is-height-resizing { user-select: none; }
+.lmd-db-timeline-side-height-resizer {
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-4px;
+  height:8px;
+  z-index:31;
+  cursor:ns-resize;
+  touch-action:none;
+}
+.lmd-db-timeline-side-height-resizer::after {
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:3px;
+  height:1px;
+  background:transparent;
+}
+.lmd-db-timeline-side-height-resizer:hover::after,
+.lmd-db-timeline-side-panel.is-height-resizing .lmd-db-timeline-side-height-resizer::after { background:var(--interactive-accent); }
+.lmd-db-timeline-log-list,
+.lmd-db-timeline-inspector-list { overflow-y:auto; scrollbar-gutter:stable; overscroll-behavior:contain; }
+
+.lmd-db-timeline-pin {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.lmd-db-timeline-pin-head {
+  position: absolute;
+  top: 4px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-orange);
+  background: var(--background-primary);
+  border: 1px solid color-mix(in srgb,var(--color-orange) 55%,var(--background-modifier-border));
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.18);
+  pointer-events: auto;
+  cursor: context-menu;
+}
+.lmd-db-timeline-pin-head svg { width: 12px; height: 12px; }
+.lmd-db-timeline-pin-line {
+  position: absolute;
+  top: 20px;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  background: color-mix(in srgb,var(--color-orange) 70%,transparent);
+  border-left: 1px dashed color-mix(in srgb,var(--color-orange) 80%,transparent);
+}
+.lmd-db-timeline-pin-label { display:none !important; }
+.lmd-db-timeline-pin-drop-guide {
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  z-index:24;
+  border-left:2px dashed var(--interactive-accent);
+  pointer-events:none;
+}
+.lmd-db-timeline-pin-drop-guide::before {
+  content:"";
+  position:absolute;
+  top:0;
+  left:-5px;
+  width:8px;
+  height:8px;
+  transform:rotate(45deg);
+  background:var(--interactive-accent);
+}
+.lmd-db-timeline-pin-drop-guide.is-hidden { display:none; }
+.lmd-db-timeline-pin-library { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
+.lmd-db-timeline-pin-library-row {
+  display:grid;
+  grid-template-columns: 24px minmax(120px,.8fr) minmax(160px,1.2fr) 28px 28px;
+  align-items:center;
+  gap:7px;
+  padding:6px 7px;
+  border:1px solid var(--background-modifier-border);
+  border-radius:7px;
+  background:var(--background-secondary);
+}
+.lmd-db-timeline-pin-library-row.is-dragging { opacity:.45; }
+.lmd-db-timeline-pin-library-grip { color:var(--text-faint); cursor:grab; display:flex; align-items:center; justify-content:center; }
+.lmd-db-timeline-pin-library-grip svg { width:14px; height:14px; }
+.lmd-db-timeline-pin-library-time { font-size:var(--font-ui-smaller); color:var(--text-muted); font-variant-numeric:tabular-nums; }
+.lmd-db-timeline-pin-library-name { width:100%; min-width:0; }
+.lmd-db-timeline-pin-library-jump,
+.lmd-db-timeline-pin-library-delete { width:26px; height:26px; padding:0; display:flex; align-items:center; justify-content:center; }
+.lmd-db-timeline-pin-library-jump svg,
+.lmd-db-timeline-pin-library-delete svg { width:13px; height:13px; }
+
+/* 0.13.13 — scroll-safe timeline coordinates + adaptive ruler density. */
+.lmd-db-timeline-side-head {
+  justify-content: flex-start;
+  gap: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.lmd-db-timeline-side-tabs { gap: 4px; }
+.lmd-db-timeline-side-head .lmd-db-timeline-log-export { margin-left: auto; }
+.lmd-db-timeline-side-head .lmd-db-timeline-log-clear,
+.lmd-db-timeline-side-head .lmd-db-timeline-side-tab { flex: 0 0 auto; }
+
+.lmd-db-timeline-pin-source { width: 34px; min-width: 34px; padding-inline: 0; justify-content: center; }
+.lmd-db-timeline-pin-source .lmd-db-toolbar-icon { margin: 0; }
+
+.lmd-db-timeline-day-bands {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44px;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.lmd-db-timeline-day-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--background-secondary) 14%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--text-muted) 24%, transparent);
+}
+.lmd-db-timeline-day-band.is-alt {
+  background: color-mix(in srgb, var(--interactive-accent) 3%, transparent);
+}
+.lmd-db-timeline-ruler-hour.is-day-start {
+  border-left: 2px solid color-mix(in srgb, var(--text-muted) 58%, transparent);
+  color: var(--text-normal);
+  font-weight: 650;
+}
+.lmd-db-timeline-track { z-index: 1; }
+.lmd-db-timeline-ruler { z-index: 4; }
+.lmd-db-timeline-pin { z-index: 10; }
+
+/* 0.13.14 — snap-driven ruler + canonical horizontal timeline coordinates. */
+.lmd-db-timeline-ruler {
+  overflow: hidden;
+}
+.lmd-db-timeline-ruler-hour {
+  padding: 4px 0 0 6px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1px;
+  z-index: 2;
+}
+.lmd-db-timeline-ruler-time {
+  display: block;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.lmd-db-timeline-ruler-date {
+  display: block;
+  min-height: 14px;
+  line-height: 14px;
+  font-size: calc(var(--font-ui-smaller) * .92);
+  color: var(--text-faint);
+  font-weight: 650;
+}
+.lmd-db-timeline-day-bands {
+  position: absolute;
+  inset: 0;
+  height: 44px;
+  z-index: 0;
+  pointer-events: none;
+}
+.lmd-db-timeline-day-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--background-secondary) 72%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--text-muted) 28%, transparent);
+}
+.lmd-db-timeline-day-band.is-alt {
+  background: color-mix(in srgb, var(--interactive-accent) 8%, var(--background-secondary));
+}
+.lmd-db-timeline-ruler-hour.is-day-start {
+  border-left: 2px solid color-mix(in srgb, var(--interactive-accent) 58%, var(--text-muted));
+}
+
+/* 0.13.15 — custom pointer drag for Timeline pins. */
+.lmd-db-timeline-pin-source.is-pointer-dragging { cursor: grabbing; }
+body.lmd-db-is-timeline-pin-dragging,
+body.lmd-db-is-timeline-pin-dragging * { cursor: grabbing !important; user-select: none !important; }
+
+
+/* 0.13.17 — ruler/grid share exact timeToX coordinates; no repeating-background drift. */
+.lmd-db-timeline-grid-lines {
+  position:absolute;
+  left:0;
+  right:0;
+  top:44px;
+  bottom:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.lmd-db-timeline-grid-line {
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:0;
+  border-left:1px solid color-mix(in srgb,var(--background-modifier-border) 42%,transparent);
+  transform:translateX(-0.5px);
+}
+.lmd-db-timeline-grid-line.is-day-start {
+  border-left:2px solid color-mix(in srgb,var(--interactive-accent) 38%,var(--background-modifier-border));
+  transform:translateX(-1px);
+}
+
+
+/* 0.14.2 — Table Rendering / Input polish */
+/* Keep compact date cells visually aligned with ordinary text/number inputs. */
+.lmd-db-table tbody td.lmd-db-date-cell {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.lmd-db-table tbody td .lmd-db-date-cell-button {
+  display: block;
+  width: 100%;
+  height: 28px;
+  min-height: 28px;
+  margin: 0;
+  padding: 3px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  line-height: 20px;
+  font-size: inherit;
+  font-weight: 400;
+  box-shadow: none;
+  background: transparent;
+}
+.lmd-db-table tbody td .lmd-db-date-cell-button:hover {
+  border-color: var(--background-modifier-border-hover);
+  background: var(--background-modifier-hover);
+}
+
+/* The multi-select mirror exists only for compatibility and must never paint a
+   browser input surface over chips. */
+.lmd-db-multiselect-mirror {
+  display: none !important;
+}
+.lmd-db-multiselect-cell {
+  padding-right: 6px !important;
+}
+
+/* Checkbox cells should be able to become genuinely compact. */
+.lmd-db-table th[data-column-type="checkbox"],
+.lmd-db-table td[data-column-type="checkbox"],
+.lmd-db-checkbox-cell {
+  text-align: center !important;
+}
+.lmd-db-checkbox-cell {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+/* Number editing stays compact and requests the numeric keyboard/input mode. */
+.lmd-db-cell-input[data-field-type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 0.14.3 — persistent Select option registry / single-select */
+.lmd-db-single-select-cell .lmd-db-multiselect-chips,
+.lmd-db-single-select-chips {
+  min-width: 0;
+}
+.lmd-db-select-options-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: min(56vh, 520px);
+  overflow-y: auto;
+  padding: 2px 2px 8px;
+}
+.lmd-db-select-option-manage-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 92px 34px 34px 34px;
+  gap: 6px;
+  align-items: center;
+}
+.lmd-db-select-option-manage-row > button,
+.lmd-db-select-option-add {
+  min-height: 30px;
+}
+.lmd-db-select-option-name {
+  width: 100%;
+  min-width: 0;
+}
+.lmd-db-select-option-add {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+
+/* 0.14.4 — compact View controls, hidden toolbar state, body marker. */
+.lmd-db-view-mini-tools {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 16px 0;
+  min-height: 28px;
+}
+.lmd-db-mini-icon-button {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+.lmd-db-mini-icon-button svg { width: 15px; height: 15px; }
+.lmd-db-toolbar-collapsed > .lmd-db-toolbar,
+.lmd-db-toolbar-collapsed > .lmd-db-rule-bar { display: none !important; }
+.lmd-db-embedded .lmd-db-view-mini-tools { padding-left: 8px; padding-right: 8px; }
+.lmd-db-body-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 16px;
+  width: 16px;
+  height: 20px;
+  margin: 0;
+  color: var(--text-muted);
+}
+.lmd-db-body-marker svg { width: 14px; height: 14px; }
+
+/* 0.14.5 DLC — embedded View navigation shell shared by Table / Board / Calendar / Timeline. */
+.lmd-db-embed-view-bar {
+  overflow: visible;
+  padding: 8px 10px 0;
+  gap: 4px;
+  min-width: 0;
+}
+.lmd-db-embed-view-tabs {
+  flex: 1 1 auto;
+  overflow: hidden;
+  min-width: 0;
+}
+.lmd-db-embed-view-bar .lmd-db-view-tab {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lmd-db-view-more {
+  width: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: var(--text-muted);
+  border-radius: 5px 5px 0 0;
+  font-size: 18px;
+  line-height: 1;
+}
+.lmd-db-view-more:hover { background: var(--background-modifier-hover) !important; color: var(--text-normal); }
+.lmd-db-embed-mini-tools {
+  flex: 0 0 auto;
+  padding: 0 !important;
+  min-height: 30px;
+  margin-left: auto;
+}
+.lmd-db-embed-view-bar .lmd-db-add-view { flex: 0 0 30px; }
+
+/* 0.15.0-hotfix.1 — hierarchical flexible relation picker */
+.lmd-db-relation-list.lmd-db-relation-tree {
+  max-height: min(58vh, 520px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.lmd-db-relation-group + .lmd-db-relation-group {
+  border-top: 1px solid var(--background-modifier-border);
+}
+.lmd-db-relation-group-header {
+  width: 100%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  text-align: left;
+  cursor: pointer;
+}
+.lmd-db-relation-group-header:hover {
+  background: var(--background-modifier-hover);
+}
+.lmd-db-relation-group-caret {
+  width: 14px;
+  flex: 0 0 14px;
+  color: var(--text-muted);
+}
+.lmd-db-relation-group-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.lmd-db-relation-group-count {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+}
+.lmd-db-relation-group-items.is-collapsed { display: none; }
+.lmd-db-relation-tree .lmd-db-relation-option {
+  padding-left: 30px;
+}
+.lmd-db-relation-empty {
+  padding: 18px 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* 0.15.1 Context Attachments */
+.lmd-db-attachment-picker-list {
+  max-height: min(62vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.lmd-db-attachment-pick-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text-normal);
+  text-align: left;
+  cursor: pointer;
+}
+.lmd-db-attachment-pick-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-attachment-pick-icon,
+.lmd-db-attachment-row-icon { display: inline-flex; width: 16px; height: 16px; flex: 0 0 16px; }
+.lmd-db-attachment-toolbar { display: flex; gap: 8px; margin: 10px 0 12px; }
+.lmd-db-attachment-groups { display: flex; flex-direction: column; gap: 10px; max-height: min(62vh, 620px); overflow-y: auto; padding-right: 4px; }
+.lmd-db-attachment-group { border: 1px solid var(--background-modifier-border); border-radius: 8px; overflow: hidden; background: var(--background-primary); }
+.lmd-db-attachment-group-head { display: flex; align-items: center; gap: 6px; padding: 7px 8px; background: var(--background-secondary); }
+.lmd-db-attachment-group-name { flex: 1 1 auto; min-width: 100px; border: 0; background: transparent; font-weight: 600; color: var(--text-normal); }
+.lmd-db-attachment-items { display: flex; flex-direction: column; padding: 4px; }
+.lmd-db-attachment-row { display: flex; align-items: center; gap: 5px; min-height: 32px; padding: 2px 4px; border-radius: 5px; }
+.lmd-db-attachment-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-attachment-row.is-missing { opacity: .55; }
+.lmd-db-attachment-open { display: flex; align-items: center; gap: 7px; flex: 1 1 auto; min-width: 0; border: 0; background: transparent; color: var(--text-normal); text-align: left; cursor: pointer; }
+.lmd-db-attachment-open span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 0; flex: 0 0 28px; }
+
+/* 0.15.2 rebuild — inline Context Attachments tree (based on 0.15.1-hotfix.1). */
+.lmd-db-body-marker.lmd-db-attachment-toggle {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.lmd-db-body-marker.lmd-db-attachment-toggle:hover,
+.lmd-db-body-marker.lmd-db-attachment-toggle[aria-expanded="true"] {
+  color: var(--text-accent);
+  background: var(--background-modifier-hover);
+}
+.lmd-db-attachment-inline-row > td { border-top: 0 !important; }
+.lmd-db-attachment-inline-cell {
+  padding: 0 10px 8px 42px !important;
+  background: color-mix(in srgb, var(--background-secondary) 42%, transparent);
+}
+.lmd-db-inline-attachment-tree {
+  max-width: min(700px, calc(100vw - 120px));
+  padding: 5px 0 3px 10px;
+  color: var(--text-normal);
+}
+.lmd-db-inline-attachment-group { position: relative; margin: 2px 0 5px; }
+.lmd-db-inline-attachment-group-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  padding: 1px 4px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  font-weight: 600;
+  cursor: pointer;
+}
+.lmd-db-inline-attachment-group-head:hover { color: var(--text-normal); background: var(--background-modifier-hover); }
+.lmd-db-inline-attachment-chevron { display: inline-flex; width: 14px; height: 14px; }
+.lmd-db-inline-attachment-chevron svg { width: 13px; height: 13px; }
+.lmd-db-inline-attachment-group-count { color: var(--text-faint); font-weight: 400; }
+.lmd-db-inline-attachment-list {
+  position: relative;
+  margin-left: 11px;
+  padding-left: 8px;
+  border-left: 1px solid var(--background-modifier-border);
+}
+.lmd-db-inline-attachment-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--text-muted);
+}
+.lmd-db-inline-attachment-item.is-missing { opacity: .5; }
+.lmd-db-inline-attachment-item.is-reorder-armed { cursor: grabbing; background: color-mix(in srgb, var(--interactive-accent) 8%, transparent); }
+.lmd-db-inline-attachment-item.is-dragging { opacity: .45; }
+.lmd-db-inline-attachment-item.is-drag-before::before,
+.lmd-db-inline-attachment-item.is-drag-after::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--interactive-accent);
+  z-index: 3;
+}
+.lmd-db-inline-attachment-item.is-drag-before::before { top: -1px; }
+.lmd-db-inline-attachment-item.is-drag-after::after { bottom: -1px; }
+.lmd-db-inline-attachment-branch {
+  display: inline-block;
+  width: 15px;
+  margin-left: -9px;
+  color: var(--background-modifier-border-hover);
+  font-family: var(--font-monospace);
+  line-height: 1;
+  user-select: none;
+}
+.lmd-db-inline-attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  max-width: 100%;
+  height: 24px;
+  padding: 0 5px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-normal);
+  font-size: var(--font-ui-small);
+  text-align: left;
+  cursor: pointer;
+}
+.lmd-db-inline-attachment-link:hover { background: var(--background-modifier-hover); color: var(--text-accent); }
+.lmd-db-inline-attachment-link > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-inline-attachment-file-icon { display: inline-flex; width: 14px; height: 14px; flex: 0 0 14px; color: var(--text-muted); }
+.lmd-db-inline-attachment-file-icon svg { width: 13px; height: 13px; }
+.lmd-db-inline-attachment-empty,
+.lmd-db-inline-attachment-empty-group { color: var(--text-faint); font-size: var(--font-ui-smaller); padding: 4px 5px; }
+
+/* Compact edit modal: hierarchy first, actions second; no summary/source-card overflow. */
+.lmd-db-attachment-modal-shell { width: min(760px, 92vw) !important; }
+.lmd-db-attachment-modal-content { min-width: 0; }
+.lmd-db-attachment-title-row { display: flex; align-items: center; gap: 8px; }
+.lmd-db-attachment-title-row h2 { margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-attachment-title-icon { display: inline-flex; width: 20px; height: 20px; flex: 0 0 20px; color: var(--text-muted); }
+.lmd-db-attachment-modal-desc { margin: 6px 0 10px; color: var(--text-muted); font-size: var(--font-ui-smaller); }
+.lmd-db-attachment-toolbar { display: flex; align-items: center; gap: 8px; margin: 8px 0 10px; }
+.lmd-db-attachment-groups { display: flex; flex-direction: column; gap: 8px; max-height: min(62vh, 600px); overflow-y: auto; padding: 2px 5px 3px 1px; }
+.lmd-db-attachment-group { position: relative; border: 1px solid var(--background-modifier-border); border-radius: 7px; overflow: visible; background: var(--background-primary); }
+.lmd-db-attachment-group-head {
+  display: grid;
+  grid-template-columns: 26px 26px minmax(90px, 1fr) auto 28px 28px;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 5px 6px;
+  background: var(--background-secondary);
+  border-radius: 7px 7px 0 0;
+}
+.lmd-db-attachment-group-name { width: 100%; min-width: 0; height: 28px; border: 0; background: transparent; font-weight: 600; color: var(--text-normal); overflow: hidden; text-overflow: ellipsis; }
+.lmd-db-attachment-group-count { min-width: 22px; padding: 1px 6px; border-radius: 999px; background: var(--background-modifier-hover); color: var(--text-muted); font-size: var(--font-ui-smaller); text-align: center; }
+.lmd-db-attachment-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: grab;
+}
+.lmd-db-attachment-drag-handle:hover { color: var(--text-normal); background: var(--background-modifier-hover); }
+.lmd-db-attachment-drag-handle:active { cursor: grabbing; }
+.lmd-db-attachment-items { display: flex; flex-direction: column; min-height: 32px; padding: 3px 5px 5px; }
+.lmd-db-attachment-row { position: relative; display: grid; grid-template-columns: 26px minmax(0, 1fr) 28px; align-items: center; gap: 3px; min-height: 30px; padding: 1px 2px; border-radius: 5px; }
+.lmd-db-attachment-row:hover { background: var(--background-modifier-hover); }
+.lmd-db-attachment-row.is-missing { opacity: .55; }
+.lmd-db-attachment-open { display: flex; align-items: center; gap: 7px; min-width: 0; border: 0; box-shadow: none; background: transparent; color: var(--text-normal); text-align: left; cursor: pointer; }
+.lmd-db-attachment-row-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmd-db-attachment-row-icon { display: inline-flex; width: 15px; height: 15px; flex: 0 0 15px; color: var(--text-muted); }
+.lmd-db-attachment-row-icon svg { width: 14px; height: 14px; }
+.lmd-db-attachment-group-empty, .lmd-db-attachment-empty { padding: 10px; color: var(--text-faint); font-size: var(--font-ui-smaller); text-align: center; }
+.lmd-db-attachment-danger { color: var(--text-muted); }
+.lmd-db-attachment-danger:hover { color: var(--text-error); }
+.lmd-db-attachment-group.is-dragging, .lmd-db-attachment-row.is-dragging { opacity: .45; }
+.lmd-db-attachment-group.is-drag-before::before,
+.lmd-db-attachment-group.is-drag-after::after,
+.lmd-db-attachment-row.is-drag-before::before,
+.lmd-db-attachment-row.is-drag-after::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 2px;
+  background: var(--interactive-accent);
+  border-radius: 2px;
+  z-index: 4;
+}
+.lmd-db-attachment-group.is-drag-before::before { top: -5px; }
+.lmd-db-attachment-group.is-drag-after::after { bottom: -5px; }
+.lmd-db-attachment-row.is-drag-before::before { top: -1px; }
+.lmd-db-attachment-row.is-drag-after::after { bottom: -1px; }
+.lmd-db-attachment-items.is-drag-over { background: color-mix(in srgb, var(--interactive-accent) 8%, transparent); }
+
+/* 0.15.3 — relation-local attachment notes. Notes live with the attachment
+   reference, not in the attached Markdown, and use the spare horizontal space
+   in both the manager and the inline tree. */
+.lmd-db-attachment-row {
+  grid-template-columns: 26px minmax(150px, 0.9fr) minmax(140px, 1.15fr) 28px;
+}
+.lmd-db-attachment-note-input {
+  width: 100%;
+  min-width: 0;
+  height: 27px;
+  padding: 2px 7px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  box-shadow: none;
+}
+.lmd-db-attachment-note-input:hover {
+  border-color: var(--background-modifier-border);
+  background: var(--background-primary);
+}
+.lmd-db-attachment-note-input:focus {
+  border-color: var(--interactive-accent);
+  background: var(--background-primary);
+  color: var(--text-normal);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--interactive-accent) 24%, transparent);
+}
+.lmd-db-inline-attachment-item {
+  gap: 6px;
+}
+.lmd-db-inline-attachment-link {
+  flex: 0 1 auto;
+  max-width: min(52%, 360px);
+}
+.lmd-db-inline-attachment-note {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 0 5px;
+  color: var(--text-faint);
+  font-size: var(--font-ui-smaller);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .lmd-db-attachment-row {
+    grid-template-columns: 26px minmax(0, 1fr) 28px;
+  }
+  .lmd-db-attachment-note-input {
+    grid-column: 2 / 3;
+    margin-bottom: 3px;
+  }
+  .lmd-db-attachment-remove { grid-column: 3; grid-row: 1 / span 2; }
+}
+
+
+/* 0.15.3-hotfix.1 — real-database Table geometry stability.
+   CSS zoom can turn a 1px grid into a 0.5px/0.7px sub-pixel line. Chromium
+   rasterizes those inconsistently across long tables, making random horizontal
+   and vertical borders appear to vanish. main.js sets --lmd-table-grid-width to
+   the inverse of the current Table UI zoom so these key grid edges remain about
+   one visible pixel. Intentionally target actual data/header rows only; spacer
+   and attachment detail rows keep their deliberate border rules. */
+.lmd-db-table {
+  border-top-width: var(--lmd-table-grid-width, 1px) !important;
+  border-left-width: var(--lmd-table-grid-width, 1px) !important;
+}
+.lmd-db-table > thead > tr > th,
+.lmd-db-table > tbody > tr.lmd-db-row > td,
+.lmd-db-table > tbody > tr.lmd-db-table-group-row > td,
+.lmd-db-table > tbody > tr.lmd-db-table-group-add-row > td,
+.lmd-db-table > tbody > tr.lmd-db-table-bottom-add-row > td {
+  border-right-width: var(--lmd-table-grid-width, 1px) !important;
+  border-bottom-width: var(--lmd-table-grid-width, 1px) !important;
+}
+
+/* 0.16.0 Parent / Child — hierarchy lives in the item identity layer, not schema columns. */
+.lmd-db-name-line.lmd-db-child-name-line {
+  padding-inline-start: calc(var(--lmd-parent-depth, 0) * 18px);
+}
+.lmd-db-parent-toggle {
+  width: 18px;
+  min-width: 18px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .78;
+}
+.lmd-db-parent-toggle:hover { opacity: 1; background: var(--background-modifier-hover); }
+.lmd-db-parent-toggle.is-placeholder { visibility: hidden; pointer-events: none; }
+.lmd-db-parent-picker-search { width: 100%; margin-bottom: 10px; }
+.lmd-db-parent-picker-list { max-height: 52vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.lmd-db-parent-picker-item { width: 100%; display: flex; align-items: center; gap: 8px; justify-content: flex-start; text-align: left; }
+
+/* 0.16.1 — Parent / Child panel inside Markdown reading view */
+.lmd-db-note-child-panel {
+  margin: 1.25rem 0 0;
+  padding: 10px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-m);
+  background: var(--background-primary-alt);
+}
+.lmd-db-note-child-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+}
+.lmd-db-note-child-panel-title-wrap { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.lmd-db-note-child-panel-icon { display: inline-flex; color: var(--text-muted); }
+.lmd-db-note-child-panel-icon svg { width: 16px; height: 16px; }
+.lmd-db-note-child-panel-progress { color: var(--text-muted); font-size: var(--font-ui-small); margin-right: auto; }
+.lmd-db-note-child-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: var(--font-ui-small);
+}
+.lmd-db-note-child-add svg { width: 14px; height: 14px; }
+.lmd-db-note-child-tree { margin-top: 7px; }
+.lmd-db-note-child-empty { padding: 8px 4px 4px; color: var(--text-faint); font-size: var(--font-ui-small); }
+.lmd-db-note-child-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding-left: calc(var(--lmd-child-depth, 0) * 22px);
+}
+.lmd-db-note-child-row:hover { background: var(--background-modifier-hover); border-radius: var(--radius-s); }
+.lmd-db-note-child-branch { width: 14px; flex: 0 0 14px; color: var(--text-faint); text-align: center; font-family: var(--font-monospace); }
+.lmd-db-note-child-check { margin: 0; flex: 0 0 auto; }
+.lmd-db-note-child-file-icon { display: inline-flex; color: var(--text-muted); flex: 0 0 auto; }
+.lmd-db-note-child-file-icon svg { width: 15px; height: 15px; }
+.lmd-db-note-child-name {
+  appearance: none;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 2px 0;
+  height: auto;
+  min-width: 0;
+  color: var(--text-normal);
+  text-align: left;
+  justify-content: flex-start;
+  flex: 0 1 auto;
+}
+.lmd-db-note-child-name:hover { color: var(--text-accent); background: transparent; box-shadow: none; }
+.lmd-db-note-child-status {
+  margin-left: auto;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--background-modifier-hover);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+}
+
+/* 0.16.2 — explicit Parent / Child drag reparenting. */
+.lmd-db-table-wrap { position: relative; }
+.lmd-db-row.is-drop-parent-target > td {
+  box-shadow: inset 0 0 0 2px var(--interactive-accent) !important;
+  background: color-mix(in srgb, var(--interactive-accent) 8%, var(--background-primary)) !important;
+}
+.lmd-db-hierarchy-root-drop {
+  position: sticky;
+  left: 16px;
+  top: 6px;
+  z-index: 35;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0 0 -34px 0;
+  transform: translateY(4px);
+  padding: 5px 10px;
+  border: 1px dashed var(--background-modifier-border-hover);
+  border-radius: var(--radius-s);
+  background: var(--background-primary);
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  line-height: 20px;
+  box-shadow: var(--shadow-s);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+.lmd-db-hierarchy-root-drop.is-visible {
+  opacity: .92;
+  visibility: visible;
+  pointer-events: auto;
+}
+.lmd-db-hierarchy-root-drop.is-drop-target {
+  color: var(--text-normal);
+  border-color: var(--interactive-accent);
+  background: color-mix(in srgb, var(--interactive-accent) 10%, var(--background-primary));
+}
+
+
+/* 0.16.3 — computed Parent / Child progress rollup. The rollup is view-only:
+   no percentage or counters are written back into Markdown/Canvas metadata. */
+.lmd-db-hierarchy-progress {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 86px;
+  max-width: 112px;
+  color: var(--text-muted);
+  font-size: var(--font-ui-smaller);
+  white-space: nowrap;
+  user-select: none;
+}
+.lmd-db-hierarchy-progress-text {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.lmd-db-hierarchy-progress-track {
+  display: inline-block;
+  width: 34px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--background-modifier-border);
+}
+.lmd-db-hierarchy-progress-fill {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: var(--interactive-accent);
+  transition: width 120ms ease;
+}
+.lmd-db-note-child-progress-meter {
+  width: 100%;
+  height: 5px;
+  margin: 3px 0 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--background-modifier-border);
+}
+.lmd-db-note-child-progress-meter-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--interactive-accent);
+  transition: width 140ms ease;
+}
+
+/* 0.16.3-hotfix.1 — hierarchical checkbox progress lives in the checkbox column,
+   not beside the item name. The checkbox remains the interaction target while
+   parent rows can show a compact completion meter in the same cell. */
+.lmd-db-hierarchical-checkbox-cell {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.lmd-db-checkbox-cell-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lmd-db-checkbox-button.is-indeterminate {
+  border-color: var(--interactive-accent);
+  background: color-mix(in srgb, var(--interactive-accent) 18%, transparent);
+  color: var(--interactive-accent);
+}
+.lmd-db-checkbox-button.is-indeterminate svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3;
+}
+.lmd-db-hierarchical-checkbox-cell .lmd-db-hierarchy-progress {
+  flex: 1 1 auto;
+  min-width: 72px;
+  max-width: none;
+  justify-content: flex-start;
+}
+.lmd-db-hierarchical-checkbox-cell .lmd-db-hierarchy-progress-track {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 28px;
+  max-width: 64px;
+}
+
+/* 0.17.0 — Version Lineage V1. Linear history only; no branching semantics yet. */
+.lmd-db-version-lineage-list { display:flex; flex-direction:column; gap:0; margin:10px 0 14px; }
+.lmd-db-version-lineage-row { position:relative; display:flex; align-items:center; gap:8px; min-height:34px; padding-left:22px; }
+.lmd-db-version-lineage-row:not(:last-child)::before { content:""; position:absolute; left:7px; top:20px; bottom:-14px; width:1px; background:var(--background-modifier-border); }
+.lmd-db-version-lineage-dot { position:absolute; left:3px; width:9px; height:9px; border-radius:50%; background:var(--text-faint); box-shadow:0 0 0 2px var(--background-primary); }
+.lmd-db-version-lineage-dot.is-current { background:var(--interactive-accent); }
+.lmd-db-version-lineage-name, .lmd-db-version-lineage-current, .lmd-db-note-version-item { border:0; background:transparent; box-shadow:none; cursor:pointer; }
+.lmd-db-version-lineage-name { flex:1 1 auto; text-align:left; color:var(--text-normal); }
+.lmd-db-version-lineage-status { color:var(--text-muted); font-size:var(--font-ui-smaller); }
+.lmd-db-version-lineage-current { color:var(--interactive-accent); font-size:var(--font-ui-smaller); }
+.lmd-db-note-version-panel { margin:0 0 12px; padding:10px 12px; border:1px solid var(--background-modifier-border); border-radius:8px; background:var(--background-secondary); }
+.lmd-db-note-version-header { display:flex; align-items:center; gap:7px; margin-bottom:8px; font-weight:600; }
+.lmd-db-note-version-icon { display:inline-flex; }
+.lmd-db-note-version-icon svg { width:15px; height:15px; }
+.lmd-db-note-version-strip { display:flex; align-items:center; gap:5px; overflow-x:auto; padding-bottom:2px; }
+.lmd-db-note-version-arrow { color:var(--text-faint); flex:0 0 auto; }
+.lmd-db-note-version-item { flex:0 0 auto; padding:3px 7px; border-radius:6px; color:var(--text-muted); }
+.lmd-db-note-version-item:hover { background:var(--background-modifier-hover); color:var(--text-normal); }
+.lmd-db-note-version-item.is-current { background:color-mix(in srgb, var(--interactive-accent) 15%, transparent); color:var(--interactive-accent); font-weight:600; }
